@@ -1,39 +1,3 @@
-<template>
-  <div class="login-wrapper">
-    <section>
-      <form @submit.prevent="SignIn">
-        <h1>Login</h1>
-        <div class="inputbox">
-          <i class="fa-regular fa-envelope"></i>
-          <img src="@/assets/icons/email.png" alt="" />
-          <input type="email" v-model="form.email" required />
-          <label for="">Email</label>
-        </div>
-
-        <div class="inputbox">
-          <i class="fa-solid fa-lock"></i>
-          <img src="@/assets/icons/padlock.png" alt="" />
-          <input type="password" v-model="form.password" required />
-          <label for="">Password</label>
-        </div>
-
-        <div class="forget">
-          <div class="remember-me">
-            <label for=""><input type="checkbox" />Remember Me</label>
-          </div>
-          <a href="#">Forget Password</a>
-        </div>
-
-        <button @click="SignIn">Sign in</button>
-
-        <div class="register">
-          <p>Don't have a account <a href="#">Register</a></p>
-        </div>
-      </form>
-    </section>
-  </div>
-</template>
-
 <script>
 import { useRouter } from "vue-router";
 
@@ -103,6 +67,42 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="login-wrapper">
+    <section>
+      <form @submit.prevent="SignIn">
+        <h1>Login</h1>
+        <div class="inputbox">
+          <i class="fa-regular fa-envelope"></i>
+          <img src="@/assets/icons/email.png" alt="" />
+          <input type="email" v-model="form.email" required />
+          <label for="">Email</label>
+        </div>
+
+        <div class="inputbox">
+          <i class="fa-solid fa-lock"></i>
+          <img src="@/assets/icons/padlock.png" alt="" />
+          <input type="password" v-model="form.password" required />
+          <label for="">Password</label>
+        </div>
+
+        <div class="forget">
+          <div class="remember-me">
+            <label for=""><input type="checkbox" />Remember Me</label>
+          </div>
+          <a href="#">Forget Password</a>
+        </div>
+
+        <button @click="SignIn">Sign in</button>
+
+        <div class="register">
+          <p>Don't have an account? <a href="/sign-up">Sign up now</a></p>
+        </div>
+      </form>
+    </section>
+  </div>
+</template>
 
 <style scoped>
 * {

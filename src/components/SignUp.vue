@@ -1,66 +1,3 @@
-<template>
-  <div class="login-wrapper">
-    <section>
-      <form @submit.prevent="Register">
-        <h1>Register</h1>
-
-        <div class="inputbox">
-          <i class="fa-regular fa-envelope"></i>
-          <img src="@/assets/icons/id-card.png" alt="" />
-          <input type="text" v-model="form.first_name" required />
-          <label for="">First Name</label>
-        </div>
-        <div class="inputbox">
-          <i class="fa-regular fa-envelope"></i>
-          <img src="@/assets/icons/id-card.png" alt="" />
-          <input type="text" v-model="form.last_name" required />
-          <label for="">Last Name</label>
-        </div>
-
-        <div class="inputbox">
-          <i class="fa-regular fa-envelope"></i>
-          <img src="@/assets/icons/email.png" alt="" />
-          <input type="email" v-model="form.email" required />
-          <label for="">Email</label>
-        </div>
-
-        <div class="inputbox">
-          <i class="fa-solid fa-lock"></i>
-          <img src="@/assets/icons/padlock.png" alt="" />
-          <input type="password" v-model="form.password" required />
-          <label for="">Password</label>
-        </div>
-
-        <div class="inputbox">
-          <i class="fa-solid fa-lock"></i>
-          <img v-if="!passwordsMatch" src="@/assets/icons/padlock.png" alt="" />
-          <img v-else src="@/assets/icons/check.png" alt="" />
-          <input
-            type="password"
-            v-model="form.confirm_password"
-            required
-            @input="checkPasswords"
-          />
-          <label for="">Confirm Password</label>
-        </div>
-
-        <div class="forget">
-          <div class="remember-me">
-            <label for=""><input type="checkbox" />Remember Me</label>
-          </div>
-          <a href="#">Forget Password</a>
-        </div>
-
-        <button @click="SignUp">Sign Up</button>
-
-        <div class="register">
-          <p>Don't have a account <a href="#">Register</a></p>
-        </div>
-      </form>
-    </section>
-  </div>
-</template>
-
 <script>
 import { useRouter } from "vue-router";
 
@@ -132,6 +69,69 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="login-wrapper">
+    <section>
+      <form @submit.prevent="Register">
+        <h1>Register</h1>
+
+        <div class="inputbox">
+          <i class="fa-regular fa-envelope"></i>
+          <img src="@/assets/icons/id-card.png" alt="" />
+          <input type="text" v-model="form.first_name" required />
+          <label for="">First Name</label>
+        </div>
+        <div class="inputbox">
+          <i class="fa-regular fa-envelope"></i>
+          <img src="@/assets/icons/id-card.png" alt="" />
+          <input type="text" v-model="form.last_name" required />
+          <label for="">Last Name</label>
+        </div>
+
+        <div class="inputbox">
+          <i class="fa-regular fa-envelope"></i>
+          <img src="@/assets/icons/email.png" alt="" />
+          <input type="email" v-model="form.email" required />
+          <label for="">Email</label>
+        </div>
+
+        <div class="inputbox">
+          <i class="fa-solid fa-lock"></i>
+          <img src="@/assets/icons/padlock.png" alt="" />
+          <input type="password" v-model="form.password" required />
+          <label for="">Password</label>
+        </div>
+
+        <div class="inputbox">
+          <i class="fa-solid fa-lock"></i>
+          <img v-if="!passwordsMatch" src="@/assets/icons/padlock.png" alt="" />
+          <img v-else src="@/assets/icons/check.png" alt="" />
+          <input
+            type="password"
+            v-model="form.confirm_password"
+            required
+            @input="checkPasswords"
+          />
+          <label for="">Confirm Password</label>
+        </div>
+
+        <!-- <div class="forget">
+          <div class="remember-me">
+            <label for=""><input type="checkbox" />Remember Me</label>
+          </div>
+          <a href="#">Forget Password</a>
+        </div> -->
+
+        <button @click="SignUp">Sign Up</button>
+
+        <div class="login">
+          <p>Already have an account? <a href="/sign-in">Sign in</a></p>
+        </div>
+      </form>
+    </section>
+  </div>
+</template>
 
 <style scoped>
 * {
@@ -261,20 +261,20 @@ button:hover {
   background-color: rgb(255, 255, 255, 0.5);
 }
 
-.register {
+.login {
   font-size: 0.9rem;
   color: #fff;
   text-align: center;
   margin: 25px 0 10px;
 }
 
-.register p a {
+.login p a {
   text-decoration: none;
   color: #fff;
   font-weight: 600;
 }
 
-.register p a:hover {
+.login p a:hover {
   text-decoration: underline;
 }
 </style>
