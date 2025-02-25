@@ -2,12 +2,16 @@ import { createWebHistory, createRouter } from "vue-router";
 import Home from "./components/Home.vue";
 import SignUp from "./components/SignUp.vue";
 import SignIn from "./components/SignIn.vue";
-
+import SearchResult from "./components/SearchResult.vue";
 const routes = [
+  {
+    path: "/",
+    redirect: "/home",
+  },
   {
     name: "Home",
     component: Home,
-    path: "/",
+    path: "/home",
   },
   {
     name: "SignUp",
@@ -18,6 +22,14 @@ const routes = [
     name: "SignIn",
     component: SignIn,
     path: "/sign-in",
+  },
+  {
+    name: "SearchResult",
+    component: SearchResult,
+    path: "/search",
+    props: (route) => ({
+      searchQuery: route.state?.searchQuery || "",
+    }),
   },
 ];
 
