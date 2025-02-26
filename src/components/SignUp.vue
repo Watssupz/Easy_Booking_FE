@@ -9,6 +9,7 @@ export default {
         first_name: "",
         last_name: "",
         email: "",
+        phone_number: "",
         password: "",
         confirm_password: "",
       },
@@ -97,6 +98,13 @@ export default {
         </div>
 
         <div class="inputbox">
+          <i class="fa-regular fa-envelope"></i>
+          <img src="@/assets/icons/email.png" alt="" />
+          <input type="tel" v-model="form.phone_number" required />
+          <label for="">Phone</label>
+        </div>
+
+        <div class="inputbox">
           <i class="fa-solid fa-lock"></i>
           <img src="@/assets/icons/padlock.png" alt="" />
           <input type="password" v-model="form.password" required />
@@ -181,7 +189,7 @@ h1 {
 
 .inputbox {
   position: relative;
-  margin: 15px 0;
+  margin: 10px 0;
   max-width: 310px;
   border-bottom: 2px solid #fff;
 }
@@ -190,7 +198,7 @@ h1 {
   position: absolute;
   top: 50%;
   left: 5px;
-  transform: translateY(-50%);
+  transform: translateY(-5%);
   font-size: 1rem;
   pointer-events: none;
   transition: all 0.5s ease-in-out;
