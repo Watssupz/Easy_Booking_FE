@@ -152,7 +152,7 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 .searchAdvance {
   padding: 15px;
   border-radius: 8px;
