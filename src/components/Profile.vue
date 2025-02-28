@@ -1,11 +1,11 @@
 <script>
-import Headerbar from "./Headerbar.vue";
+import Header from "./Header.vue";
 import PersonalInfo from "./PersonalInfo.vue";
 import PasswordUpdate from "./PasswordUpdate.vue";
 export default {
   name: "SearchPage",
   components: {
-    Headerbar,
+    Header,
     PersonalInfo,
     PasswordUpdate,
   },
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <template>
-  <Headerbar />
+  <Header />
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-3">

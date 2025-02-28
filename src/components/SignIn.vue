@@ -1,4 +1,5 @@
 <script>
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 import { useRouter } from "vue-router";
 
 export default {
@@ -15,7 +16,7 @@ export default {
       async SignIn() {
         // Nên đổi tên thành SignIn
         try {
-          const response = await fetch("https://localhost:7210/api/AC/SignIn", {
+          const response = await fetch(API_ENDPOINTS.AC_SIGN_IN, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -42,7 +43,7 @@ export default {
           }
 
           const result = await response.json();
-          console.log("Đăng nhập thành công:", result);
+          // console.log("Đăng nhập thành công:", result);
 
           if (result.data) {
             localStorage.setItem("token", result.data);

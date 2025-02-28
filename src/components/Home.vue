@@ -1,13 +1,14 @@
 <script>
-import Headerbar from "./Headerbar.vue";
+import Header from "./Header.vue";
 import SearchBar from "./SearchBar.vue";
 import Footer from "./Footer.vue";
 import DestinationCard from "./DestinationCard.vue";
 import { useRoute, useRouter } from "vue-router";
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 export default {
   name: "HomePage",
   components: {
-    Headerbar,
+    Header,
     SearchBar,
     Footer,
     DestinationCard,
@@ -65,7 +66,7 @@ export default {
   methods: {
     async fetchRoomData() {
       try {
-        const response = await fetch("https://localhost:7210/api/R/All", {
+        const response = await fetch(API_ENDPOINTS.R_ALL, {
           method: "GET",
           headers: {
             Accept: "*/*",
@@ -87,7 +88,7 @@ export default {
       this.isLoading = true;
 
       try {
-        const response = await fetch("https://localhost:7210/api/R/Search", {
+        const response = await fetch(API_ENDPOINTS.R_SEARCH, {
           method: "POST",
           headers: {
             Accept: "*/*",
@@ -127,7 +128,7 @@ export default {
 
 <template>
   <!-- header -->
-  <Headerbar />
+  <Header />
   <div class="main-content">
     <div class="hero">
       <!-- title -->

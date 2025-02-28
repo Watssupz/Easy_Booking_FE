@@ -1,4 +1,5 @@
 <script>
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 import { useRouter } from "vue-router";
 
 export default {
@@ -23,7 +24,7 @@ export default {
 
       async SignUp() {
         try {
-          const response = await fetch("https://localhost:7210/api/AC/SignUp", {
+          const response = await fetch(API_ENDPOINTS.AC_SIGN_UP, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

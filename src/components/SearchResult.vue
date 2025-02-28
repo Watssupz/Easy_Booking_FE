@@ -1,11 +1,12 @@
 <script>
-import Headerbar from "./Headerbar.vue";
+import Header from "./Header.vue";
 import Footer from "./Footer.vue";
 import { debounce } from "lodash";
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 export default {
   name: "SearchPage",
   components: {
-    Headerbar,
+    Header,
     Footer,
   },
   props: {
@@ -42,7 +43,7 @@ export default {
     async fetchSearchRoomData() {
       this.isLoading = true;
       try {
-        const response = await fetch("https://localhost:7210/api/R/Search", {
+        const response = await fetch(API_ENDPOINTS.R_SEARCH, {
           method: "POST",
           headers: {
             Accept: "*/*",
@@ -77,7 +78,7 @@ export default {
 </script>
 
 <template>
-  <Headerbar />
+  <Header />
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-3">

@@ -1,5 +1,6 @@
 <script>
 import { useRouter } from "vue-router";
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 export default {
   name: "PasswordUpdate",
   data() {
@@ -39,7 +40,7 @@ export default {
       }
 
       try {
-        const response = await fetch("https://localhost:7210/api/AC/ChgPwd", {
+        const response = await fetch(API_ENDPOINTS.AC_CHGPWD, {
           method: "POST",
           headers: {
             accept: "*/*",

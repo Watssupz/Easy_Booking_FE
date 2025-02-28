@@ -1,4 +1,5 @@
 <script>
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 export default {
   name: "PersonalInfo",
   data() {
@@ -30,7 +31,7 @@ export default {
       }
 
       try {
-        const response = await fetch("https://localhost:7210/api/AC/profile", {
+        const response = await fetch(API_ENDPOINTS.AC_PROFILE, {
           method: "GET",
           headers: {
             accept: "*/*",
@@ -160,18 +161,15 @@ export default {
           return;
       }
       try {
-        const response = await fetch(
-          "https://localhost:7210/api/AC/UpdateProf",
-          {
-            method: "POST",
-            headers: {
-              accept: "*/*",
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(updateData),
-          }
-        );
+        const response = await fetch(API_ENDPOINTS.AC_UPDATE_PROF, {
+          method: "POST",
+          headers: {
+            accept: "*/*",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updateData),
+        });
 
         if (!response.ok) {
           throw new Error("Yêu cầu thất bại với status: " + response.status);
