@@ -1,6 +1,7 @@
 <script>
 import { API_ENDPOINTS } from "@/constant/apiConstants";
 import { useRouter } from "vue-router";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   name: "Header",
@@ -15,6 +16,7 @@ export default {
       isAuthenticated: false,
       errorMessage: "",
       successMessage: "",
+      tokenCheckInterval: null,
     };
   },
   setup() {
@@ -26,6 +28,10 @@ export default {
     if (this.isAuthenticated) {
       this.fetchProfile();
     }
+    this.startTokenExpirationCheck();
+  },
+  beforeUnmount() {
+    this.stopTokenExpirationCheck();
   },
   methods: {
     async fetchProfile() {
@@ -45,7 +51,10 @@ export default {
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch profile: ${response.statusText}`);
+          // throw new Error(`Failed to fetch profile: ${response.statusText}`);
+          this.logout();
+          this.stopTokenExpirationCheck();
+          return;
         }
 
         const data = await response.json();
@@ -63,19 +72,87 @@ export default {
         this.errorMessage = error.message || "Error fetching profile.";
         console.error("Profile fetch error:", error);
         // If the token is invalid (e.g., expired), log the user out
-        if (error.message.includes("401")) {
-          this.logout();
-        }
+        // if (error.message.includes("401")) {
+        this.logout();
+        // }
       }
     },
     checkAuth() {
       const token = localStorage.getItem("token");
-      this.isAuthenticated = !!token;
+      // this.isAuthenticated = !!token;
+      if (!token) {
+        this.isAuthenticated = false;
+        return;
+      }
+      // Check if the token is expired
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        if (decodedToken.exp < currentTime) {
+          console.log("Token is expired on checkAuth. Logging out...");
+          this.errorMessage = "Your session has expired. Please sign in again.";
+          this.logout();
+          return;
+        }
+        this.isAuthenticated = true;
+      } catch (error) {
+        console.error("Invalid token:", error);
+        this.errorMessage = "Invalid token. Please sign in again.";
+        this.logout();
+      }
     },
+    startTokenExpirationCheck() {
+      // Check token expiration every 30 seconds
+      this.tokenCheckInterval = setInterval(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          if (this.isAuthenticated) {
+            console.log("Token removed externally. Logging out...");
+            this.errorMessage = "Your session has ended. Please sign in again.";
+            this.logout();
+          }
+          this.stopTokenExpirationCheck();
+          this.isAuthenticated = false;
+          return;
+        }
+
+        try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (decodedToken.exp < currentTime) {
+            console.log("Token expired during periodic check. Logging out...");
+            this.errorMessage =
+              "Your session has expired. Please sign in again.";
+            this.logout();
+            this.stopTokenExpirationCheck();
+          }
+        } catch (error) {
+          console.error("Invalid token during periodic check:", error);
+          this.errorMessage = "Invalid token. Please sign in again.";
+          this.logout();
+          this.stopTokenExpirationCheck();
+        }
+      }, 30000); // Check every 30 seconds
+    },
+    stopTokenExpirationCheck() {
+      if (this.tokenCheckInterval) {
+        clearInterval(this.tokenCheckInterval);
+        this.tokenCheckInterval = null;
+      }
+    },
+
     logout() {
       localStorage.removeItem("token");
       this.isAuthenticated = false;
-      this.userProfile = null;
+      this.form = {
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone_number: "",
+      };
+      setTimeout(() => {
+        this.$router.push("/home");
+      }, 1000);
     },
   },
 };
@@ -143,39 +220,55 @@ export default {
               </li>
             </template>
 
-            <!-- Show Dropdown if authenticated -->
-            <li class="nav-item dropdown" v-if="isAuthenticated">
-              <a
-                class="nav-link dropdown-toggle text-white"
-                href="#"
-                id="userDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Xin chào
-                {{ form.first_name + " " + form.last_name }}
-              </a>
-              <ul
-                class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="userDropdown"
-              >
-                <li>
-                  <router-link class="dropdown-item" to="/profile">
-                    Profile
-                  </router-link>
-                </li>
-                <li>
-                  <router-link
-                    class="dropdown-item"
-                    to="/sign-in"
-                    @click="logout"
-                  >
-                    Logout
-                  </router-link>
-                </li>
-              </ul>
-            </li>
+            <!-- Show Create button and Dropdown if authenticated -->
+            <template v-if="isAuthenticated">
+              <li class="nav-item">
+                <router-link
+                  class="nav-link btn btn-light text-brown w-100"
+                  to="/create"
+                >
+                  Đăng chỗ nghỉ
+                </router-link>
+              </li>
+
+              <!-- Show Dropdown if authenticated -->
+              <li class="nav-item dropdown" v-if="isAuthenticated">
+                <a
+                  class="nav-link dropdown-toggle text-white"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Xin chào
+                  {{
+                    form.first_name && form.last_name
+                      ? form.first_name + " " + form.last_name
+                      : "User"
+                  }}
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="userDropdown"
+                >
+                  <li>
+                    <router-link class="dropdown-item" to="/profile">
+                      Profile
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link
+                      class="dropdown-item"
+                      to="/sign-in"
+                      @click="logout"
+                    >
+                      Logout
+                    </router-link>
+                  </li>
+                </ul>
+              </li>
+            </template>
           </ul>
         </div>
       </div>
