@@ -225,7 +225,7 @@ export default {
               <li class="nav-item">
                 <router-link
                   class="nav-link btn btn-light text-brown w-100"
-                  to="/create"
+                  to="/create-host"
                 >
                   Đăng chỗ nghỉ
                 </router-link>
