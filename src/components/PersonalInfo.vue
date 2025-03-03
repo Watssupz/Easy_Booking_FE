@@ -9,6 +9,7 @@ export default {
         last_name: "",
         email: "",
         phone_number: "",
+        avatar: "",
       },
       errorMessage: "",
       successMessage: "",
@@ -51,6 +52,7 @@ export default {
           this.form.last_name = data.data.last_name || "";
           this.form.email = data.data.email || "";
           this.form.phone_number = data.data.phone_number || "";
+          this.form.avatar = data.data.avatar || "";
           this.successMessage = "Lấy thông tin người dùng thành công!";
 
           // Xóa successMessage sau 2 giây (2000ms)
@@ -219,7 +221,14 @@ export default {
         <div class="col-md-2 d-flex align-items-center justify-content-center">
           <div class="profile-avatar">
             <div class="avatar-circle">
-              <img src="@/assets/icons/user.png" alt="Avatar" />
+              <img :src="form.avatar" alt="Avatar" v-if="form.avatar" />
+              <!-- Hiển thị ảnh mặc định nếu không có avatar -->
+              <img
+                src="@/assets/icons/user.png"
+                alt="Default Avatar"
+                style="width: 50%; height: 50%"
+                v-else
+              />
             </div>
           </div>
         </div>
@@ -355,7 +364,7 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #007bff;
+  background-color: #bca89f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -363,8 +372,8 @@ export default {
 }
 
 .avatar-circle img {
-  width: 50%;
-  height: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
