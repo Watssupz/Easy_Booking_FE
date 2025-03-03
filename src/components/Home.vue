@@ -293,6 +293,7 @@ html {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   justify-content: center;
+  justify-items: center;
 }
 
 @media (max-width: 768px) {
