@@ -11,3 +11,8 @@ export const API_ENDPOINTS = {
   R_ALL: `${API_BASE_URL}/R/All`,
   R_SEARCH: `${API_BASE_URL}/R/Search`,
 };
+
+export const VARIABLE = {
+  HOST: "Host",
+  CUSTOMER: "Customer",
+};

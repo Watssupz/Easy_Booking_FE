@@ -1,5 +1,5 @@
 <script>
-import { API_ENDPOINTS } from "@/constant/apiConstants";
+import { API_ENDPOINTS, VARIABLE } from "@/constant/apiConstants";
 import { useRouter } from "vue-router";
 import { jwtDecode } from "jwt-decode";
 
@@ -12,7 +12,10 @@ export default {
         last_name: "",
         email: "",
         phone_number: "",
+        roles: [],
       },
+      isHost: false,
+      isCustomer: false,
       isAuthenticated: false,
       errorMessage: "",
       successMessage: "",
@@ -63,6 +66,16 @@ export default {
           this.form.last_name = data.data.last_name || "";
           this.form.email = data.data.email || "";
           this.form.phone_number = data.data.phone_number || "";
+          this.form.roles = data.data.roles || [];
+
+          if (this.checkRole(this.form.roles, VARIABLE.HOST)) {
+            this.isHost = true;
+          } else if (this.checkRole(this.form.roles, VARIABLE.CUSTOMER)) {
+            this.isCustomer = true;
+          } else {
+            console.log("Role not found!");
+          }
+
           this.successMessage = "Profile fetched successfully!";
           console.log("Profile data:", data);
         } else {
@@ -150,9 +163,12 @@ export default {
         email: "",
         phone_number: "",
       };
-      setTimeout(() => {
-        this.$router.push("/home");
-      }, 1000);
+      // setTimeout(() => {
+      this.$router.push("/home");
+      // }, 1000);
+    },
+    checkRole(roles, role_name) {
+      return roles.includes(role_name);
     },
   },
 };
@@ -222,10 +238,19 @@ export default {
 
             <!-- Show Create button and Dropdown if authenticated -->
             <template v-if="isAuthenticated">
-              <li class="nav-item">
+              <li class="nav-item" v-if="isCustomer">
                 <router-link
                   class="nav-link btn btn-light text-brown w-100"
                   to="/create-host"
+                >
+                  Tạo tài khoản đối tác
+                </router-link>
+              </li>
+
+              <li class="nav-item" v-if="isHost">
+                <router-link
+                  class="nav-link btn btn-light text-brown w-100"
+                  to="/create-place"
                 >
                   Đăng chỗ nghỉ
                 </router-link>
