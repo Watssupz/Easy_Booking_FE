@@ -13,6 +13,8 @@ export default {
       },
       errorMessage: "",
       successMessage: "",
+      showPopup: false,
+      selectedFile: null,
     };
   },
   created() {
@@ -201,6 +203,62 @@ export default {
         this.isLoading = false;
       }
     },
+    openPopup() {
+      this.showPopup = true;
+    },
+    closePopup() {
+      this.showPopup = false;
+      this.selectedFile = null; // Reset ảnh mới khi đóng popup
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+        // Tùy chọn: Hiển thị preview ảnh
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // this.form.avatar = e.target.result; // Hiển thị preview
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+
+    async saveAvatar() {
+      if (!this.selectedFile) {
+        alert("Please select a file first!");
+        return;
+      }
+      // Tạo FormData để gửi file
+      const formData = new FormData();
+      formData.append("ImageFile", this.selectedFile);
+      // Lấy token từ localStorage
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch("https://localhost:7210/api/AC/Upload", {
+          method: "POST",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Upload successful:", data);
+        if (data && data.url) {
+          this.form.avatar = data.url; // Cập nhật avatar mới
+        }
+        this.closePopup();
+        this.fetchUserProfile();
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        alert("Failed to upload avatar. Please try again.");
+      }
+    },
   },
 };
 </script>
@@ -208,7 +266,7 @@ export default {
 <template>
   <div class="content-area">
     <div class="container">
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-md-10">
           <div class="profile-header">
             <h2>Thông tin cá nhân</h2>
@@ -220,7 +278,7 @@ export default {
         </div>
         <div class="col-md-2 d-flex align-items-center justify-content-center">
           <div class="profile-avatar">
-            <div class="avatar-circle">
+            <div class="avatar-circle" @click="openPopup">
               <img :src="form.avatar" alt="Avatar" v-if="form.avatar" />
               <!-- Hiển thị ảnh mặc định nếu không có avatar -->
               <img
@@ -229,6 +287,15 @@ export default {
                 style="width: 50%; height: 50%"
                 v-else
               />
+              <!-- Thêm biểu tượng camera -->
+              <div class="camera-overlay">
+                <img
+                  src="@/assets/icons/camera.png"
+                  alt="Change avatar"
+                  class="camera-icon"
+                  style="width: 50%; height: 50%"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -327,6 +394,50 @@ export default {
       </div>
     </div>
   </div>
+
+  <!-- Thêm popup -->
+  <transition name="fade">
+    <div class="popup" v-if="showPopup" @click.self="closePopup">
+      <div class="popup-content">
+        <h3>Change Avatar</h3>
+        <div class="container">
+          <div class="row d-flex align-items-center">
+            <div class="col-md-4">
+              <div class="profile-avatar">
+                <div
+                  class="avatar-circle"
+                  style="cursor: unset"
+                  @click="openPopup"
+                >
+                  <img :src="form.avatar" alt="Avatar" v-if="form.avatar" />
+                  <!-- Hiển thị ảnh mặc định nếu không có avatar -->
+                  <img
+                    src="@/assets/icons/user.png"
+                    alt="Default Avatar"
+                    style="width: 50%; height: 50%"
+                    v-else
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <input
+                type="file"
+                style="cursor: pointer"
+                @change="handleFileUpload"
+                accept="image/*"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="popup-actions m-2">
+          <button class="popup_btn" @click="closePopup">Cancel</button>
+          <button class="popup_btn" @click="saveAvatar">Save</button>
+        </div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <style scoped>
@@ -355,20 +466,23 @@ export default {
 }
 
 .profile-avatar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .avatar-circle {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background-color: #bca89f;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  cursor: pointer;
 }
 
 .avatar-circle img {
@@ -526,5 +640,92 @@ export default {
   .note {
     font-size: 10px;
   }
+}
+
+/* camera */
+.camera-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.avatar-circle:hover .camera-overlay {
+  opacity: 1;
+}
+.camera-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* Style cho popup */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.popup-content h3 {
+  margin-bottom: 15px;
+}
+
+.popup-content input[type="file"] {
+  margin: 10px 0;
+  display: block;
+  width: 100%;
+}
+
+.popup-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.popup-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup-actions button:first-child {
+  background: #ccc;
+}
+
+.popup-actions button:last-child {
+  background: #6a4a3a;
+  color: white;
+}
+
+.popup-actions button:first-child:hover {
+  background: gray;
+}
+
+.popup-actions button:last-child:hover {
+  background: #ccc;
+  color: black;
 }
 </style>
