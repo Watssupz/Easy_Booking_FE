@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   AC_PROFILE: `${API_BASE_URL}/AC/profile`,
   AC_UPDATE_PROF: `${API_BASE_URL}/AC/UpdateProf`,
   AC_CREATE_HOST: `${API_BASE_URL}/AC/CreateHost`,
+  AC_UPLOAD_AVATAR: `${API_BASE_URL}/AC/Upload`,
 
   R_ALL: `${API_BASE_URL}/R/All`,
   R_SEARCH: `${API_BASE_URL}/R/Search`,

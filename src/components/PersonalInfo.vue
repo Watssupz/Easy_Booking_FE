@@ -234,7 +234,7 @@ export default {
       // Lấy token từ localStorage
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch("https://localhost:7210/api/AC/Upload", {
+        const response = await fetch(API_ENDPOINTS.AC_UPLOAD_AVATAR, {
           method: "POST",
           headers: {
             accept: "*/*",
