@@ -77,7 +77,7 @@ export default {
           }
 
           this.successMessage = "Profile fetched successfully!";
-          console.log("Profile data:", data);
+          // console.log("Profile data:", data);
         } else {
           console.log("Error fetch profile!");
         }
@@ -250,7 +250,7 @@ export default {
               <li class="nav-item" v-if="isHost">
                 <router-link
                   class="nav-link btn btn-light text-brown w-100"
-                  to="/create-place"
+                  to="/create-post"
                 >
                   Đăng chỗ nghỉ
                 </router-link>

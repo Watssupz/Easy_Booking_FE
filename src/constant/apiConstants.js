@@ -11,6 +11,15 @@ export const API_ENDPOINTS = {
 
   R_ALL: `${API_BASE_URL}/R/All`,
   R_SEARCH: `${API_BASE_URL}/R/Search`,
+  R_CREATE: `${API_BASE_URL}/R/Create`,
+
+  REGION_PROVINCE: `${API_BASE_URL}/Region/provinces`,
+  REGION_DISTRICT: `${API_BASE_URL}/Region/districts/`,
+  REGION_WARD: `${API_BASE_URL}/Region/wards/`,
+
+  FEATURE_ALL: `${API_BASE_URL}/F/All`,
+
+  UPLOAD_IMAGES: `${API_BASE_URL}/M/Upload/`,
 };
 
 export const VARIABLE = {

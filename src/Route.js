@@ -5,6 +5,7 @@ import SignIn from "./components/SignIn.vue";
 import SearchResult from "./components/SearchResult.vue";
 import Profile from "./components/Profile.vue";
 import CreateHost from "./components/CreateHost.vue";
+import Posts from "./components/Posts.vue";
 const routes = [
   {
     path: "/",
@@ -42,6 +43,11 @@ const routes = [
     name: "CreateHost",
     component: CreateHost,
     path: "/create-host",
+  },
+  {
+    name: "Posts",
+    component: Posts,
+    path: "/create-post",
   },
 ];
 
