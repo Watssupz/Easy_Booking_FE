@@ -29,7 +29,7 @@ export default {
         },
         {
           id: 2,
-          name: "TP. Hồ Chí Minh",
+          name: "Thành phố Hồ Chí Minh",
           image: "https://i.ibb.co/cRwd14q/Ho-Chi-Minh-City.jpg",
           flag: "🇻🇳",
         },
