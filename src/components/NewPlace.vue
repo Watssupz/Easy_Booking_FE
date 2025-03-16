@@ -24,8 +24,20 @@ export default {
         selectedFeatureIds: [],
       },
       featuresList: [],
-
       isUploading: false,
+
+      // Object error-message
+      errors: {
+        room_number: "",
+        price_per_night: "",
+        description: "",
+        province: "",
+        district: "",
+        ward: "",
+        specificLocation: "",
+        images: "",
+        features: "",
+      },
     };
   },
   async mounted() {
@@ -205,8 +217,70 @@ export default {
       // console.log("Selected Feature:", this.form.selectedFeatureIds);
     },
 
+    validateForm() {
+      let isValid = true;
+      this.clearErrors();
+
+      if (!this.form.room_number.trim()) {
+        this.errors.room_number = "Vui lòng nhập tên chỗ nghỉ";
+        isValid = false;
+      }
+
+      if (!this.form.price_per_night || this.form.price_per_night <= 0) {
+        this.errors.price_per_night = "Vui lòng nhập giá phòng hợp lệ";
+        isValid = false;
+      }
+
+      if (!this.form.description.trim()) {
+        this.errors.description = "Vui lòng nhập mô tả";
+        isValid = false;
+      }
+
+      if (!this.selectedProvince) {
+        this.errors.province = "Vui lòng chọn tỉnh/thành";
+        isValid = false;
+      }
+
+      if (!this.selectedDistrict) {
+        this.errors.district = "Vui lòng chọn quận/huyện";
+        isValid = false;
+      }
+
+      if (!this.selectedWard) {
+        this.errors.ward = "Vui lòng chọn phường/xã";
+        isValid = false;
+      }
+
+      if (!this.specificLocation.trim()) {
+        this.errors.specificLocation = "Vui lòng nhập địa chỉ cụ thể";
+        isValid = false;
+      }
+
+      if (this.fileList.length === 0) {
+        this.errors.images = "Vui lòng chọn ít nhất một ảnh";
+        isValid = false;
+      }
+
+      if (this.form.selectedFeatureIds.length === 0) {
+        this.errors.features = "Vui lòng chọn ít nhất một tiện ích";
+        isValid = false;
+      }
+
+      return isValid;
+    },
+
+    // Thêm method để xóa lỗi
+    clearErrors() {
+      Object.keys(this.errors).forEach((key) => {
+        this.errors[key] = "";
+      });
+    },
     // create room
     async CreateRoom() {
+      if (!this.validateForm()) {
+        this.$message.error("Vui lòng điền đầy đủ các trường bắt buộc!");
+        return;
+      }
       try {
         const body = {
           room: {
@@ -281,7 +355,16 @@ export default {
             type="text"
             placeholder="Tên chỗ nghỉ"
             v-model="form.room_number"
+            :class="{ 'is-invalid': errors.room_number }"
           />
+          <div class="error-message" v-if="errors.room_number">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.room_number }}</span>
+          </div>
         </div>
       </div>
 
@@ -292,7 +375,12 @@ export default {
             <h5 class="mb-1">Tỉnh/Thành</h5>
           </div>
           <div class="input_item">
-            <select name="provinces" id="provinces" v-model="selectedProvince">
+            <select
+              name="provinces"
+              id="provinces"
+              v-model="selectedProvince"
+              :class="{ 'is-invalid': errors.province }"
+            >
               <option value="" selected>Chọn Tỉnh/Thành</option>
               <option
                 v-for="province in provinces"
@@ -302,6 +390,14 @@ export default {
                 {{ province.province_name }}
               </option>
             </select>
+            <div class="error-message" v-if="errors.province">
+              <img
+                src="@/assets/icons/warning.png"
+                alt="Warning"
+                class="warning-icon"
+              />
+              <span>{{ errors.province }}</span>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
@@ -310,7 +406,12 @@ export default {
             <h5 class="mb-1">Quận/Huyện</h5>
           </div>
           <div class="input_item">
-            <select name="districts" id="" v-model="selectedDistrict">
+            <select
+              name="districts"
+              id=""
+              v-model="selectedDistrict"
+              :class="{ 'is-invalid': errors.district }"
+            >
               <option value="" selected>Chọn Quận/Huyện</option>
               <option
                 v-for="district in districts"
@@ -320,6 +421,14 @@ export default {
                 {{ district.district_name }}
               </option>
             </select>
+            <div class="error-message" v-if="errors.district">
+              <img
+                src="@/assets/icons/warning.png"
+                alt="Warning"
+                class="warning-icon"
+              />
+              <span>{{ errors.district }}</span>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
@@ -328,7 +437,12 @@ export default {
             <h5 class="mb-1">Phường/Xã</h5>
           </div>
           <div class="input_item">
-            <select name="wards" id="" v-model="selectedWard">
+            <select
+              name="wards"
+              id=""
+              v-model="selectedWard"
+              :class="{ 'is-invalid': errors.ward }"
+            >
               <option value="" selected>Chọn Phường/Xã</option>
               <option
                 v-for="ward in wards"
@@ -338,6 +452,14 @@ export default {
                 {{ ward.ward_name }}
               </option>
             </select>
+            <div class="error-message" v-if="errors.ward">
+              <img
+                src="@/assets/icons/warning.png"
+                alt="Warning"
+                class="warning-icon"
+              />
+              <span>{{ errors.ward }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -348,7 +470,19 @@ export default {
           <h5 class="mb-1">Địa chỉ cụ thể</h5>
         </div>
         <div class="input_item">
-          <input type="text" v-model="specificLocation" />
+          <input
+            type="text"
+            v-model="specificLocation"
+            :class="{ 'is-invalid': errors.specificLocation }"
+          />
+          <div class="error-message" v-if="errors.specificLocation">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.specificLocation }}</span>
+          </div>
         </div>
       </div>
 
@@ -358,7 +492,19 @@ export default {
           <h5 class="mb-1">Giá phòng</h5>
         </div>
         <div class="input_item">
-          <input type="number" v-model="form.price_per_night" />
+          <input
+            type="number"
+            v-model="form.price_per_night"
+            :class="{ 'is-invalid': errors.price_per_night }"
+          />
+          <div class="error-message" v-if="errors.price_per_night">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.price_per_night }}</span>
+          </div>
         </div>
       </div>
 
@@ -374,6 +520,14 @@ export default {
             @fileSelected="handleFileSelected"
             @uploadRequested="handleUploadRequested"
           />
+          <div class="error-message" v-if="errors.images">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.images }}</span>
+          </div>
         </div>
       </div>
 
@@ -390,6 +544,14 @@ export default {
           :features="featuresList"
           @update:selectedFeatures="handleSelection"
         />
+        <div class="error-message" v-if="errors.features">
+          <img
+            src="@/assets/icons/warning.png"
+            alt="Warning"
+            class="warning-icon"
+          />
+          <span>{{ errors.features }}</span>
+        </div>
       </div>
 
       <div class="col-md-12 mt-4">
@@ -407,12 +569,20 @@ export default {
             class="w-100"
             name=""
             id=""
+            :class="{ 'is-invalid': errors.description }"
           ></textarea>
+          <div class="error-message" v-if="errors.description">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.description }}</span>
+          </div>
         </div>
         <button
-          class="w-100 rounded"
+          class="btn btn_create text-brown w-100 rounded"
           @click="CreateRoom"
-          :disabled="isUploading || fileList.length === 0"
         >
           {{ isUploading ? "Đang tạo..." : "Tạo chỗ nghỉ" }}
         </button>
@@ -457,5 +627,35 @@ export default {
   height: 200px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.btn_create {
+  color: #6a4a3a;
+  border: 1px solid #6a4a3a;
+}
+
+.btn_create:hover {
+  color: white;
+  background-color: #6a4a3a;
+  border-radius: 5px;
+}
+
+/* warning */
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  color: #dc3545;
+}
+
+.warning-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
 }
 </style>
