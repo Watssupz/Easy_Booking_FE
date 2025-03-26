@@ -8,6 +8,7 @@ export default {
   data() {
     return {
       newRoomId: null,
+      thumbnail: [], // 1 file
       fileList: [],
       provinces: [],
       districts: [],
@@ -25,7 +26,7 @@ export default {
       },
       featuresList: [],
       isUploading: false,
-
+      isThumbnailUploaded: false,
       // Object error-message
       errors: {
         room_number: "",
@@ -36,6 +37,7 @@ export default {
         ward: "",
         specificLocation: "",
         images: "",
+        thumbnail: "",
         features: "",
       },
     };
@@ -144,10 +146,63 @@ export default {
         this.isUploading = false;
       }
     },
-    // Phương thức mới để gọi upload từ nút button
-    triggerUpload() {
-      const filesToUpload = this.fileList.map((f) => f.originFileObj);
-      this.handleUploadRequested(filesToUpload);
+
+    // Xử lý cho thumbnail
+    updateThumbnail(newThumbnail) {
+      this.thumbnail = []; // Xóa thumbnail cũ
+      this.thumbnail = newThumbnail; // Thêm thumbnail mới
+      this.isThumbnailUploaded = false; // Reset trạng thái upload khi thay đổi thumbnail
+      console.log("Thumbnail updated:", this.thumbnail);
+    },
+    handleThumbnailSelected(file) {
+      console.log("Thumbnail selected:", file);
+    },
+    async handleThumbnailUploadRequested(files) {
+      if (files.length === 0) {
+        this.errors.thumbnail = "Vui lòng chọn một thumbnail!";
+        this.$message.error("Vui lòng chọn một thumbnail!");
+        return;
+      }
+
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append("upload", files[0]); // API endpoint cho single file
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        this.errors.thumbnail = "Không tìm thấy token xác thực.";
+        this.$message.error("Không tìm thấy token xác thực.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${API_ENDPOINTS.UPLOAD_THUMBNAIL}${this.newRoomId}`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "*/*",
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Upload thumbnail thất bại!");
+        }
+
+        const data = await response.json();
+        this.$message.success("Upload thumbnail thành công!");
+        console.log("Upload thumbnail response:", data);
+        this.errors.thumbnail = "";
+        this.isThumbnailUploaded = true;
+      } catch (error) {
+        this.errors.thumbnail = "Upload thumbnail thất bại!";
+        this.$message.error("Upload thumbnail thất bại!");
+        console.error(error);
+      } finally {
+        this.isUploading = false;
+      }
     },
 
     async loadProvinces() {
@@ -222,47 +277,52 @@ export default {
       this.clearErrors();
 
       if (!this.form.room_number.trim()) {
-        this.errors.room_number = "Vui lòng nhập tên chỗ nghỉ";
+        this.errors.room_number = "Please enter your property name";
         isValid = false;
       }
 
       if (!this.form.price_per_night || this.form.price_per_night <= 0) {
-        this.errors.price_per_night = "Vui lòng nhập giá phòng hợp lệ";
+        this.errors.price_per_night = "Please enter a valid room price";
         isValid = false;
       }
 
       if (!this.form.description.trim()) {
-        this.errors.description = "Vui lòng nhập mô tả";
+        this.errors.description = "Please enter description";
         isValid = false;
       }
 
       if (!this.selectedProvince) {
-        this.errors.province = "Vui lòng chọn tỉnh/thành";
+        this.errors.province = "Please select province/city";
         isValid = false;
       }
 
       if (!this.selectedDistrict) {
-        this.errors.district = "Vui lòng chọn quận/huyện";
+        this.errors.district = "Please select district";
         isValid = false;
       }
 
       if (!this.selectedWard) {
-        this.errors.ward = "Vui lòng chọn phường/xã";
+        this.errors.ward = "Please select ward/commune";
         isValid = false;
       }
 
       if (!this.specificLocation.trim()) {
-        this.errors.specificLocation = "Vui lòng nhập địa chỉ cụ thể";
+        this.errors.specificLocation = "Please enter specific address";
         isValid = false;
       }
 
       if (this.fileList.length === 0) {
-        this.errors.images = "Vui lòng chọn ít nhất một ảnh";
+        this.errors.images = "Please select at least one photo";
+        isValid = false;
+      }
+
+      if (this.thumbnail.length === 0) {
+        this.errors.thumbnail = "Please select a thumbnail";
         isValid = false;
       }
 
       if (this.form.selectedFeatureIds.length === 0) {
-        this.errors.features = "Vui lòng chọn ít nhất một tiện ích";
+        this.errors.features = "Please select at least one feature";
         isValid = false;
       }
 
@@ -330,6 +390,12 @@ export default {
           const filesToUpload = this.fileList.map((f) => f.originFileObj);
           await this.handleUploadRequested(filesToUpload);
         }
+
+        // Upload thumbnail
+        if (this.thumbnail.length > 0 && this.newRoomId) {
+          const thumbnailToUpload = this.thumbnail.map((f) => f.originFileObj);
+          await this.handleThumbnailUploadRequested(thumbnailToUpload);
+        }
       } catch (error) {
         this.$message.error("Tạo chỗ nghỉ thất bại!");
         console.error("Error submitting form:", error);
@@ -342,18 +408,18 @@ export default {
   <div class="container">
     <div class="row">
       <h2 class="title_post d-flex justify-content-center p-3 mb-3 rounded">
-        Chỗ nghỉ mới
+        New place
       </h2>
 
       <div class="col-md-12">
         <div class="place_item">
           <img src="@/assets/icons/title.png" alt="" />
-          <h5 class="mb-1">Tiêu đề</h5>
+          <h5 class="mb-1">Title</h5>
         </div>
         <div class="input_item">
           <input
             type="text"
-            placeholder="Tên chỗ nghỉ"
+            placeholder="InterContinental Hà Nội Hồ Tây"
             v-model="form.room_number"
             :class="{ 'is-invalid': errors.room_number }"
           />
@@ -372,7 +438,7 @@ export default {
         <div class="col-md-4">
           <div class="place_item">
             <img src="@/assets/icons/location.png" alt="" />
-            <h5 class="mb-1">Tỉnh/Thành</h5>
+            <h5 class="mb-1">Province/City</h5>
           </div>
           <div class="input_item">
             <select
@@ -381,7 +447,7 @@ export default {
               v-model="selectedProvince"
               :class="{ 'is-invalid': errors.province }"
             >
-              <option value="" selected>Chọn Tỉnh/Thành</option>
+              <option value="" selected>Select Province/City</option>
               <option
                 v-for="province in provinces"
                 :key="province.province_id"
@@ -403,7 +469,7 @@ export default {
         <div class="col-md-4">
           <div class="place_item">
             <img src="@/assets/icons/location.png" alt="" />
-            <h5 class="mb-1">Quận/Huyện</h5>
+            <h5 class="mb-1">District</h5>
           </div>
           <div class="input_item">
             <select
@@ -412,7 +478,7 @@ export default {
               v-model="selectedDistrict"
               :class="{ 'is-invalid': errors.district }"
             >
-              <option value="" selected>Chọn Quận/Huyện</option>
+              <option value="" selected>Select District</option>
               <option
                 v-for="district in districts"
                 :key="district.district_id"
@@ -434,7 +500,7 @@ export default {
         <div class="col-md-4">
           <div class="place_item">
             <img src="@/assets/icons/location.png" alt="" />
-            <h5 class="mb-1">Phường/Xã</h5>
+            <h5 class="mb-1">Ward/Commune</h5>
           </div>
           <div class="input_item">
             <select
@@ -443,7 +509,7 @@ export default {
               v-model="selectedWard"
               :class="{ 'is-invalid': errors.ward }"
             >
-              <option value="" selected>Chọn Phường/Xã</option>
+              <option value="" selected>Select Ward/Commune</option>
               <option
                 v-for="ward in wards"
                 :key="ward.ward_id"
@@ -467,7 +533,7 @@ export default {
       <div class="col-md-6 mt-4">
         <div class="place_item">
           <img src="@/assets/icons/location.png" alt="" />
-          <h5 class="mb-1">Địa chỉ cụ thể</h5>
+          <h5 class="mb-1">Specific address</h5>
         </div>
         <div class="input_item">
           <input
@@ -489,7 +555,7 @@ export default {
       <div class="col-md-6 mt-4">
         <div class="place_item">
           <img src="@/assets/icons/dollar.png" alt="" />
-          <h5 class="mb-1">Giá phòng</h5>
+          <h5 class="mb-1">Price</h5>
         </div>
         <div class="input_item">
           <input
@@ -508,14 +574,15 @@ export default {
         </div>
       </div>
 
-      <div class="col-md-12 mt-4">
+      <div class="col-md-6 mt-4">
         <div class="place_item">
           <img src="@/assets/icons/photo.png" alt="" />
-          <h5 class="mb-1">Hình ảnh</h5>
+          <h5 class="mb-1">Image</h5>
         </div>
         <div class="input_item">
           <ImageUpload
             :file-list="fileList"
+            :multiple="true"
             @update:fileList="updateFileList"
             @fileSelected="handleFileSelected"
             @uploadRequested="handleUploadRequested"
@@ -531,6 +598,31 @@ export default {
         </div>
       </div>
 
+      <div class="col-md-6 mt-4">
+        <div class="place_item">
+          <img src="@/assets/icons/photo.png" alt="" />
+          <h5 class="mb-1">Thumbnail</h5>
+        </div>
+        <div class="input_item">
+          <ImageUpload
+            :file-list="thumbnail"
+            :multiple="false"
+            :disable-upload="thumbnail.length > 0"
+            @update:fileList="updateThumbnail"
+            @fileSelected="handleThumbnailSelected"
+            @uploadRequested="handleThumbnailUploadRequested"
+          />
+          <div class="error-message" v-if="errors.thumbnail">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.thumbnail }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-12 mt-4">
         <div class="place_item">
           <img
@@ -538,7 +630,7 @@ export default {
             style="align-self: start"
             alt=""
           />
-          <h5>Tiện ích</h5>
+          <h5>Features</h5>
         </div>
         <CheckboxGroup
           :features="featuresList"
@@ -561,7 +653,7 @@ export default {
             style="align-self: start"
             alt=""
           />
-          <h5 class="mb-1">Mô tả</h5>
+          <h5 class="mb-1">Description</h5>
         </div>
         <div class="input_item">
           <textarea
@@ -584,7 +676,7 @@ export default {
           class="btn btn_create text-brown w-100 rounded"
           @click="CreateRoom"
         >
-          {{ isUploading ? "Đang tạo..." : "Tạo chỗ nghỉ" }}
+          {{ isUploading ? "Creating..." : "Create a stay" }}
         </button>
       </div>
     </div>

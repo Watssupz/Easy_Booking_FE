@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   FEATURE_ALL: `${API_BASE_URL}/F/All`,
 
   UPLOAD_IMAGES: `${API_BASE_URL}/M/Upload/`,
+  UPLOAD_THUMBNAIL: `${API_BASE_URL}/M/upload_thumbnail/`,
 };
 
 export const VARIABLE = {

@@ -30,11 +30,11 @@ export default {
         <div class="profile-menu">
           <div class="menu-item" @click="selectMenu('newPlace')">
             <img src="@/assets/icons/newhouse.png" alt="User icon" />
-            <span>Đăng chỗ nghỉ mới</span>
+            <span>Post new accommodation</span>
           </div>
           <div class="menu-item" @click="selectMenu('managePlace')">
             <img src="@/assets/icons/homestay.png" alt="Lock icon" />
-            <span>Quản lý chỗ nghỉ</span>
+            <span>Property management</span>
           </div>
         </div>
       </div>

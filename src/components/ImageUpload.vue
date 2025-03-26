@@ -1,9 +1,16 @@
 <script setup>
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, defineProps } from "vue";
 import { UploadOutlined } from "@ant-design/icons-vue";
 import { Upload, Button, message } from "ant-design-vue";
 
-const fileList = ref([]);
+// Định nghĩa props để nhận disableUpload từ parent
+const props = defineProps({
+  fileList: Array, // Danh sách file từ parent
+  multiple: Boolean, // Cho phép chọn nhiều file hay không
+  disableUpload: Boolean, // Trạng thái vô hiệu hóa
+});
+
+const fileList = ref(props.fileList || []); // Khởi tạo fileList từ props
 const emit = defineEmits(["update:fileList", "fileSelected"]);
 
 const handleChange = (info) => {
@@ -45,11 +52,13 @@ const beforeUpload = () => {
   <Upload
     v-model:file-list="fileList"
     list-type="picture"
-    :multiple="true"
+    :multiple="multiple"
     :before-upload="beforeUpload"
     @change="handleChange"
     @remove="handleRemove"
   >
-    <Button type="primary"> <UploadOutlined /> Chọn ảnh </Button>
+    <Button type="primary" :disabled="disableUpload">
+      <UploadOutlined /> Select photo
+    </Button>
   </Upload>
 </template>

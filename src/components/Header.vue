@@ -243,7 +243,7 @@ export default {
                   class="nav-link btn btn-light text-brown w-100"
                   to="/create-host"
                 >
-                  Tạo tài khoản đối tác
+                  Create partner account
                 </router-link>
               </li>
 
@@ -252,7 +252,7 @@ export default {
                   class="nav-link btn btn-light text-brown w-100"
                   to="/create-post"
                 >
-                  Đăng chỗ nghỉ
+                  List your property
                 </router-link>
               </li>
 
@@ -266,7 +266,7 @@ export default {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Xin chào
+                  Hello
                   {{
                     form.first_name && form.last_name
                       ? form.first_name + " " + form.last_name
