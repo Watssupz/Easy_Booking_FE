@@ -22,6 +22,8 @@ export default {
         price_per_night: "",
         description: "",
         detail_location: "",
+        num_beds: "",
+        num_bathrooms: "",
         selectedFeatureIds: [],
       },
       featuresList: [],
@@ -39,6 +41,8 @@ export default {
         images: "",
         thumbnail: "",
         features: "",
+        num_bathrooms: "",
+        num_beds: "",
       },
     };
   },
@@ -326,6 +330,19 @@ export default {
         isValid = false;
       }
 
+      if (
+        !this.form.num_bathrooms.length === 0 ||
+        this.form.num_bathrooms <= 0
+      ) {
+        this.errors.num_bathrooms = "Please enter a valid number of bathrooms";
+        isValid = false;
+      }
+
+      if (!this.form.num_beds.length === 0 || this.form.num_beds <= 0) {
+        this.errors.num_beds = "Please enter a valid number of bedrooms";
+        isValid = false;
+      }
+
       return isValid;
     },
 
@@ -349,6 +366,8 @@ export default {
             description: this.form.description,
             room_status_id: 1, // Assuming 1 is available status
             location: this.form.detail_location,
+            num_bathrooms: this.form.num_bathrooms,
+            num_beds: this.form.num_beds,
           },
           featureIds: this.form.selectedFeatureIds,
         };
@@ -570,6 +589,50 @@ export default {
               class="warning-icon"
             />
             <span>{{ errors.price_per_night }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mt-4">
+        <div class="place_item">
+          <img src="@/assets/icons/dollar.png" alt="" />
+          <h5 class="mb-1">Number of bedrooms</h5>
+        </div>
+        <div class="input_item">
+          <input
+            type="number"
+            v-model="form.num_beds"
+            :class="{ 'is-invalid': errors.num_beds }"
+          />
+          <div class="error-message" v-if="errors.num_beds">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.num_beds }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mt-4">
+        <div class="place_item">
+          <img src="@/assets/icons/dollar.png" alt="" />
+          <h5 class="mb-1">Number of bathrooms</h5>
+        </div>
+        <div class="input_item">
+          <input
+            type="number"
+            v-model="form.num_bathrooms"
+            :class="{ 'is-invalid': errors.num_bathrooms }"
+          />
+          <div class="error-message" v-if="errors.num_bathrooms">
+            <img
+              src="@/assets/icons/warning.png"
+              alt="Warning"
+              class="warning-icon"
+            />
+            <span>{{ errors.num_bathrooms }}</span>
           </div>
         </div>
       </div>
