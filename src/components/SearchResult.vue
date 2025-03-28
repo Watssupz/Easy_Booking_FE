@@ -43,7 +43,7 @@ export default {
     async fetchSearchRoomData() {
       this.isLoading = true;
       try {
-        const response = await fetch(API_ENDPOINTS.R_SEARCH, {
+        const response = await fetch(`${API_ENDPOINTS.R_SEARCH}`, {
           method: "POST",
           headers: {
             Accept: "*/*",
@@ -72,6 +72,9 @@ export default {
     formatPrice(price) {
       if (!price && price !== 0) return "0";
       return Number(price).toLocaleString("vi-VN");
+    },
+    goToDetail(id) {
+      this.$router.push(`/detail/${id}`);
     },
   },
 };
@@ -104,14 +107,14 @@ export default {
           <!-- list room -->
           <div
             v-for="result in searchResults"
-            :key="result.id"
+            :key="result.room_id"
             class="row searchList p-2 mb-2 shadow"
           >
-            <div class="col-md-4">
+            <div class="col-md-4 d-flex align-items-center">
               <img
                 class="img-fluid rounded float-start"
-                src="https://i.ibb.co/ZpqsHyFd/VungTau.jpg"
-                alt=""
+                :src="result.thumbnail || 'https://i.ibb.co/6w0fNhd/FF7D77.png'"
+                alt="Thumbnail"
               />
             </div>
             <div class="col-md-8 pt-1">
@@ -133,13 +136,25 @@ export default {
                   </div>
                 </div>
               </div>
-              <p>{{ result.location }}</p>
+              <p class="d-flex align-items-center">
+                <img
+                  style="height: 1em; vertical-align: middle"
+                  src="@/assets/icons/location.png"
+                  alt=""
+                />
+                {{ result.location }}
+              </p>
               <div class="row justify-content-end align-items-center">
                 <div class="col-md-12">
                   <p class="text-end">
                     VND {{ formatPrice(result.price_per_night) }}
                   </p>
-                  <button class="float-end detail_btn">Detail</button>
+                  <button
+                    class="float-end detail_btn"
+                    @click="goToDetail(result.room_id)"
+                  >
+                    Detail
+                  </button>
                 </div>
               </div>
             </div>

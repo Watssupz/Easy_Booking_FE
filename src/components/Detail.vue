@@ -2,6 +2,7 @@
 import Header from "./Header.vue";
 import Footer from "./Footer.vue";
 import VueEasyLightbox from "vue-easy-lightbox";
+import { API_ENDPOINTS } from "@/constant/apiConstants";
 
 export default {
   name: "Details",
@@ -12,6 +13,7 @@ export default {
   },
   data() {
     return {
+      rid: null,
       visible: false,
       lightboxIndex: 0,
       search: {
@@ -21,68 +23,110 @@ export default {
         guests: 2,
       },
       hotel: {
-        name: "Căn hộ Condotel 5 Sao The Sóng Vũng Tàu",
-        address: "29 Đường Thi Sách, 790000 Vũng Tàu, Việt Nam",
-        images: [
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624791959.jpg?k=df693d59ea2abf17f7b09b7b170b7096aee6ddcaeffcd333d8789fbb5af67326&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624798505.jpg?k=40a26db9432cc206170c1b00ca0bf11771f08638c613382970806a67cb20ccf1&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624426940.jpg?k=0723c13969c6362a703d929c9d0ffc6a13023d3342422879548c6531e3a370d5&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624798391.jpg?k=2863b96f9942e1a18df41ce9c4ff44e00d2bb07154ba4978052a3240f46fb458&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624433394.jpg?k=b84429919c62bbb353bc7a62f361f612ca93da91466e26ba7e7efb18e6257409&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624419722.jpg?k=217f9268d2b84da3179a0b4342ad8a200b3b705e328e00da39ec37ec22cf1e02&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624798410.jpg?k=7617fa577a63c1ea153c67a12e08eab30d08e75c642815d987b2e58b2ac95419&o=&hp=1",
-          "https://cf.bstatic.com/xdata/images/hotel/max1024x768/624791894.jpg?k=f881635559dc0e1b223ff938df24d2a37c4eedd055b5bf2997a47c3930598577&o=&hp=1",
-        ],
-        amenities: [
-          "Wifi",
-          "Điều hòa",
-          "Bàn làm việc",
-          "Tủ lạnh mini",
-          "Chỗ đỗ xe",
-          "Hồ bơi",
-          "Nhà hàng",
-          "Spa",
-          "Phòng tắm riêng",
-          "Trung tâm thể dục",
-          "Bồn tắm",
-          "Quầy bar",
-          "Dịch vụ phòng",
-          "Nhà bếp",
-          "Đưa đón sân bay",
-          "Phòng gia đình",
-          "Tiệc BBQ",
-          "Thân thiện với thú cưng",
-          "Giường ngủ thoải mái",
-
-          // {name:"Wifi", icon:"wifi.png"},
-          // {name:"Điều hoà", icon:"dieuhoa.png"}
-        ],
-        status: ["Còn phòng", "Đang hết"],
+        name: "",
+        address: "",
+        images: [],
+        amenities: [],
+        status: null,
         pricepernight: "199$",
-
-        description:
-          "Bạn có thể đủ điều kiện hưởng giảm giá Genius tại CĂN HỘ CONDOTEL 5 SAO THE SÓNG VŨNG TÀU - Apartment 5 Star Luxury The Sóng Vung Tau.<br> " +
-          "Để biết giảm giá Genius có áp Nhìn ra biển, CĂN HỘ CONDOTEL 5 SAO THE SÓNG VŨNG TÀU - Apartment 5 Star Luxury The Sóng Vung Tau ở Vũng Tàu cung cấp chỗ nghỉ có hồ bơi ngoài trời, khu vườn và phòng chờ chung. Chỗ đậu xe riêng có sẵn trong khuôn viên. cho ngày bạn đã chọn hay không, hãy đăng nhập.<br> " +
-          "Giảm Căn hộ có sân hiên nơi khách có thể nhìn ra thành phố, khu vực ghế ngồi, TV màn hình phẳng truyền hình vệ tinh, bếp đầy đủ tiện nghi gồm tủ lạnh và lò vi sóng, cùng phòng tắm riêng được trang bị vòi xịt/chậu rửa vệ sinh và đồ vệ sinh cá nhân miễn phí. Mỗi căn đều được thiết kế có ban công nhìn ra núi. Genius tại chỗ nghỉ này tùy thuộc vào ngày đặt phòng, ngày lưu trú và các ưu đãi có sẵn khác.<br>" +
-          "Nhìn ra CĂN HỘ CONDOTEL 5 SAO THE SÓNG VŨNG TÀU - Apartment 5 Star Luxury The Sóng Vung Tau có phòng xông hơi khô., CĂN HỘ CONDOTEL 5 SAO THE SÓNG VŨNG TÀU - Apartment 5 Star Luxury The Sóng Vung Tau ở Vũng Tàu cung cấp chỗ nghỉ có hồ bơi ngoài trời, khu vườn và phòng chờ chung.<br> " +
-          "Chỗ đậu xe riêng Khách có thể ghé công viên nước và sử dụng sân chơi trẻ em tại chỗ nghỉ sẵn trong khuôn viên.<br>" +
-          "CĂN HỘ CONDOTEL 5 SAO THE SÓNG VŨNG TÀU - Apartment 5 Star Luxury The Sóng Vung Tau cách Bãi Sau 9 phút đi bộ và Tượng Chúa Ki-tô 3.4 km. Chỗ nghỉ cách Sân bay Quốc tế Tân Sơn Nhất 99 km và cung cấp dịch vụ đưa đón sân bay mất phí.<br>" +
-          "Các cặp đôi đặc biệt thích vị trí tuyệt vời — họ cho điểm 9,0 khi đánh giá chuyến đi hai người.<br>",
-        highlights: [
-          "Nằm ở trung tâm Vũng Tàu",
-          "Gần bãi biển",
-          "Có hồ bơi ngoài trời",
-          "Dịch vụ phòng chuyên nghiệp",
-        ],
+        description: "",
       },
       mapUrl:
         "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.1817513153887!2d105.85380007613769!3d21.0254124806231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abeb98f8b54d%3A0x90d6982234a65f25!2sSofitel%20Legend%20Metropole%20Hanoi!5e0!3m2!1sen!2s!4v1740630776600!5m2!1sen!2s",
     };
   },
+  created() {
+    this.rid = this.$route.params.id; // Lấy ID từ URL
+    console.log("Room ID:", this.rid); // Kiểm tra giá trị ID
+    this.fetchRoomFeaturesData();
+    this.fetchRoomData();
+    this.fetchRoomMedia();
+  },
   methods: {
     showLightbox(index) {
       this.lightboxIndex = index;
       this.visible = true;
+    },
+    async fetchRoomFeaturesData() {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINTS.FEATURE_BY_ROOM_ID}${this.rid}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "*/*",
+            },
+          }
+        );
+        if (!response.ok) {
+          this.$message.error("Lấy dữ liệu thất bại");
+        }
+        const result = await response.json();
+        this.hotel.amenities = result.data;
+      } catch (error) {
+        this.$message.error("Lỗi dữ liệu Features");
+      }
+    },
+    async fetchRoomData() {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINTS.GET_ROOM_BY_ID}${this.rid}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "*/*",
+            },
+          }
+        );
+        if (!response.ok) {
+          this.$message.error("Lấy dữ liệu thất bại");
+        }
+        const result = await response.json();
+        console.log("Room Data:", result);
+        this.hotel.name = result.data.room.room_number;
+        this.hotel.address = result.data.room.location;
+        this.hotel.pricepernight = result.data.room.price_per_night;
+        this.hotel.description = result.data.room.description;
+        this.hotel.status = result.data.room.room_status_id;
+        // Kiểm tra và xử lý thumbnail
+        this.hotel.images = []; // Khởi tạo mảng rỗng mặc định
+        if (result.data.room.thumbnail) {
+          // Chỉ thêm nếu thumbnail tồn tại
+          this.hotel.images = [result.data.room.thumbnail];
+        }
+      } catch (error) {
+        this.$message.error("Lỗi ảnh");
+      }
+    },
+    async fetchRoomMedia() {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINTS.GET_MEDIA_ROOM}${this.rid}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "*/*",
+            },
+          }
+        );
+        if (!response.ok) {
+          this.$message.error("Lấy dữ liệu thất bại");
+        }
+        const result = await response.json();
+
+        // Kiểm tra nếu result.data tồn tại và là mảng
+        if (result.data && Array.isArray(result.data)) {
+          result.data.forEach((item) => {
+            if (item.picture) {
+              // Chỉ thêm nếu picture tồn tại
+              const imageUrl = `data:image/png;base64,${item.picture}`;
+              this.hotel.images.push(imageUrl);
+            }
+          });
+        }
+      } catch (error) {
+        this.$message.error("Lỗi1");
+      }
     },
   },
 };
@@ -91,12 +135,19 @@ export default {
   <div>
     <!-- Header -->
     <Header />
-    <div class="container">
+    <div class="container mt-5">
       <aside class="sidebar">
         <h1>
           {{ hotel.name }}
         </h1>
-        <p>📍 {{ hotel.address }}</p>
+        <p class="d-flex align-items-center">
+          <img
+            style="height: 1em; vertical-align: middle"
+            src="@/assets/icons/location.png"
+            alt=""
+          />
+          {{ hotel.address }}
+        </p>
         <!-- Bản đồ -->
         <div class="map-container">
           <iframe
@@ -115,18 +166,19 @@ export default {
         <div class="status-price">
           <div class="status-price-left">
             <h3>
-              Trạng thái: <span class="status">{{ hotel.status[0] }}</span>
+              Status: <span class="status">{{ hotel.status }}</span>
             </h3>
             <h3>
-              Giá: <span class="price">{{ hotel.pricepernight }}</span> / 1 đêm
+              Price:
+              <span class="price">{{ hotel.pricepernight }} VND</span> / 1 đêm
             </h3>
-            <h3>
+            <!-- <h3>
               Số người: <span class="guests"> {{ search.guests }}</span
               >/ Phòng
-            </h3>
+            </h3> -->
           </div>
           <div class="status-price-right">
-            <button class="book-btn">Đặt phòng ngay</button>
+            <button class="book-btn">Book Now</button>
           </div>
         </div>
         <!-- Hình ảnh khách sạn -->
@@ -175,27 +227,24 @@ export default {
     </div>
     <div class="hotel-info">
       <!-- Tiện ích -->
+      <h3>Features</h3>
       <div class="amenities">
         <div v-for="amenity in hotel.amenities" :key="amenity" class="amenity">
-          <span class="icon"></span> {{ amenity }}
+          {{ amenity }}
         </div>
       </div>
-      <!-- <div v-for="(amenity, index) in hotel.amenities" :key="index" class="amenity">
-           <img :src="require(`@/assets/icon/${amenity.icon}`)" alt="icon" class="icon"/>
-            <span>{{ amenity.name }}</span>
-         </div> -->
-      <h3>Mô tả</h3>
+      <h3>Description</h3>
       <p class="description" v-html="hotel.description"></p>
 
       <!-- Điểm nổi bật -->
-      <section class="highlights">
+      <!-- <section class="highlights">
         <h3>Điểm nổi bật của chỗ nghỉ</h3>
         <ul>
           <li v-for="highlight in hotel.highlights" :key="highlight">
             {{ highlight }}
           </li>
         </ul>
-      </section>
+      </section> -->
     </div>
 
     <!-- Footer -->

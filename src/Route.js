@@ -53,7 +53,7 @@ const routes = [
   {
     name: "Detail",
     component: Detail,
-    path: "/detail",
+    path: "/detail/:id",
   },
 ];
 

@@ -1,5 +1,5 @@
 <template>
-  <footer class="d-flexjustify-content-center align-items-center">
+  <footer class="d-flex justify-content-center align-items-center">
     <p class="m-0 p-0">&copy; 2025 EasyBooking</p>
   </footer>
 </template>
