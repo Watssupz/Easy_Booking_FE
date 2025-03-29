@@ -7,6 +7,8 @@ import Profile from "./components/Profile.vue";
 import CreateHost from "./components/CreateHost.vue";
 import Posts from "./components/Posts.vue";
 import Detail from "./components/Detail.vue";
+import About from "./components/About.vue"; 
+import Contact from "./components/Contact.vue"; 
 const routes = [
   {
     path: "/",
@@ -54,6 +56,16 @@ const routes = [
     name: "Detail",
     component: Detail,
     path: "/detail/:id",
+  },
+  {
+    name: "About", 
+    component: About,
+    path: "/about",
+  },
+  {
+    name: "Contact", 
+    component: Contact,
+    path: "/contact",
   },
 ];
 
