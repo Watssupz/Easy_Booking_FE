@@ -30,6 +30,8 @@ export default {
         status: null,
         pricepernight: "199$",
         description: "",
+        num_bathrooms: "",
+        num_beds: "",
       },
       mapUrl:
         "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.1817513153887!2d105.85380007613769!3d21.0254124806231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abeb98f8b54d%3A0x90d6982234a65f25!2sSofitel%20Legend%20Metropole%20Hanoi!5e0!3m2!1sen!2s!4v1740630776600!5m2!1sen!2s",
@@ -88,6 +90,8 @@ export default {
         this.hotel.pricepernight = result.data.room.price_per_night;
         this.hotel.description = result.data.room.description;
         this.hotel.status = result.data.room.room_status_id;
+        this.hotel.num_bathrooms = result.data.room.num_bathrooms;
+        this.hotel.num_beds = result.data.room.num_beds;
         // Kiểm tra và xử lý thumbnail
         this.hotel.images = []; // Khởi tạo mảng rỗng mặc định
         if (result.data.room.thumbnail) {
@@ -136,10 +140,7 @@ export default {
     <!-- Header -->
     <Header />
     <div class="container mt-5">
-      <aside class="sidebar">
-        <h1>
-          {{ hotel.name }}
-        </h1>
+      <!-- <aside class="sidebar">
         <p class="d-flex align-items-center">
           <img
             style="height: 1em; vertical-align: middle"
@@ -148,7 +149,7 @@ export default {
           />
           {{ hotel.address }}
         </p>
-        <!-- Bản đồ -->
+        Bản đồ
         <div class="map-container">
           <iframe
             :src="mapUrl"
@@ -160,22 +161,48 @@ export default {
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
-      </aside>
+      </aside> -->
       <!-- tên khách sạn -->
       <main class="details-content">
         <div class="status-price">
           <div class="status-price-left">
-            <h3>
-              Status: <span class="status">{{ hotel.status }}</span>
+            <h1>
+              {{ hotel.name }}
+            </h1>
+            <h3 class="d-flex align-items-center gap-2">
+              <img
+                style="height: 1em; vertical-align: middle"
+                src="@/assets/icons/location.png"
+                alt=""
+              />
+              {{ hotel.address }}
             </h3>
-            <h3>
-              Price:
-              <span class="price">{{ hotel.pricepernight }} VND</span> / 1 đêm
+            <h3 class="d-flex align-items-center gap-2">
+              <img
+                style="height: 1em; vertical-align: middle"
+                src="@/assets/icons/money.png"
+                alt=""
+              />
+              <span class="price text-danger"
+                >{{ hotel.pricepernight }} VND</span
+              >
+              per night
             </h3>
-            <!-- <h3>
-              Số người: <span class="guests"> {{ search.guests }}</span
-              >/ Phòng
-            </h3> -->
+            <h3 class="d-flex align-items-center gap-2">
+              <img
+                style="height: 1em; vertical-align: middle"
+                src="@/assets/icons/double-bed.png"
+                alt=""
+              />
+              {{ hotel.num_beds }}
+              ·
+              <img
+                style="height: 1em; vertical-align: middle"
+                src="@/assets/icons/bathtub.png"
+                alt=""
+              />
+              {{ hotel.num_bathrooms }}
+            </h3>
           </div>
           <div class="status-price-right">
             <button class="book-btn">Book Now</button>
@@ -270,7 +297,7 @@ export default {
   margin-top: 10px;
 }
 .details-content {
-  width: 75%;
+  width: 100%;
   background: white;
   padding: 20px;
   border-radius: 8px;
