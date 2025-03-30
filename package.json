@@ -11,6 +11,7 @@
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "bootstrap": "^5.3.3",
+    "date-fns": "^4.1.0",
     "element-plus": "^2.9.6",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",

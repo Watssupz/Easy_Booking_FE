@@ -29,6 +29,10 @@ export const API_ENDPOINTS = {
   UPLOAD_IMAGES: `${API_BASE_URL}/M/Upload/`,
   UPLOAD_THUMBNAIL: `${API_BASE_URL}/M/upload_thumbnail/`,
   GET_MEDIA_ROOM: `${API_BASE_URL}/M/`,
+
+  GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
+
+  PAYMENT_METHOD: `${API_BASE_URL}/PS/All`,
 };
 
 export const VARIABLE = {
