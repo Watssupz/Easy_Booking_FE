@@ -21,6 +21,7 @@ export default {
       visible: false,
       showPopup: false,
       showPaymentPopup: false,
+      qrImage: null,
       lightboxIndex: 0,
       search: {
         destination: "",
@@ -47,6 +48,8 @@ export default {
       num_childs: 0,
       paymentMethods: [],
       selectedPaymentMethod: "",
+      selectedPaymentMethodID: null,
+      total_price: null,
       mapUrl:
         "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.1817513153887!2d105.85380007613769!3d21.0254124806231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abeb98f8b54d%3A0x90d6982234a65f25!2sSofitel%20Legend%20Metropole%20Hanoi!5e0!3m2!1sen!2s!4v1740630776600!5m2!1sen!2s",
     };
@@ -73,6 +76,14 @@ export default {
         document.body.style.overflow = "hidden"; // Tắt cuộn khi bất kỳ popup nào mở
       } else if (!newVal && !this.showPopup) {
         document.body.style.overflow = ""; // Khôi phục khi cả hai popup đều đóng
+      }
+    },
+    async selectedDays(newVal) {
+      // Theo dõi sự thay đổi của selectedDays
+      if (newVal && newVal > 0) {
+        // Kiểm tra nếu newVal khác null và lớn hơn 0
+        console.log("Selected days changed:", newVal);
+        await this.fetchQR(); // Gọi fetchQR khi có số ngày hợp lệ
       }
     },
   },
@@ -230,7 +241,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch("https://localhost:7210/api/PS/All", {
+        const response = await fetch(`${API_ENDPOINTS.PAYMENT_LIST_TYPE}`, {
           // Dùng URL trực tiếp nếu chưa có trong API_ENDPOINTS
           method: "GET",
           headers: {
@@ -255,6 +266,86 @@ export default {
         this.paymentMethods = [];
       }
     },
+    async fetchQR() {
+      const requestBody = {
+        amount: this.selectedDays * this.hotel.pricepernight,
+        content: "test", // Giá trị content
+      };
+      try {
+        const response = await fetch(`${API_ENDPOINTS.QR_GENERATE}`, {
+          method: "POST", // Phương thức POST
+          headers: {
+            Accept: "*/*", // Chấp nhận mọi loại dữ liệu trả về
+            "Content-Type": "application/json", // Dữ liệu gửi đi là JSON
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json(); // Chuyển phản hồi thành JSON
+        this.qrImage = result.data;
+        console.log("QR Generation Successful");
+      } catch (error) {
+        console.error("Create QR error");
+      }
+    },
+    async createBooking() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        this.$message.error("No authorization token found. Please log in.");
+        return;
+      }
+
+      const requestBody = {
+        room_id: Number(this.room_id),
+        start_date_booking: this.convertDate(this.selectedStartDate),
+        end_date_booking: this.convertDate(this.selectedEndDate),
+        num_adults: this.num_adults,
+        num_children: this.num_childs,
+        price: this.total_price,
+        payment_status: this.selectedPaymentMethodID,
+      };
+      console.log("create ", requestBody);
+
+      try {
+        const response = await fetch(`${API_ENDPOINTS.CREATE_BOOKING}`, {
+          method: "POST",
+          headers: {
+            accept: "*/*",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Booking created successfully:", result);
+        this.$message.success("Booking created successfully!");
+        this.showPaymentPopup = false; // Đóng popup sau khi thành công
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } catch (error) {
+        console.error("Error creating booking:", error);
+        this.$message.error("Failed to create booking: " + error.message);
+      }
+    },
+    // Cập nhật confirmPayment để gọi createBooking
+    async confirmPayment() {
+      if (!this.selectedPaymentMethod) {
+        this.$message.error("Please select a payment method.");
+        return;
+      }
+      await this.createBooking(); // Gọi API khi nút được click
+    },
+
     handleDateRangeUpdate({ start, end, days }) {
       this.selectedStartDate =
         start instanceof Date && !isNaN(start)
@@ -265,10 +356,12 @@ export default {
 
       // Lưu số ngày được chọn
       this.selectedDays = days;
+      this.total_price = days * this.hotel.pricepernight;
 
       console.log("cha Start Date:", this.selectedStartDate);
       console.log("cha End Date:", this.selectedEndDate);
       console.log("Number of Days:", this.selectedDays);
+      console.log("Total price:", this.total_price);
     },
 
     updateAdults(event) {
@@ -301,7 +394,13 @@ export default {
     },
     selectPaymentMethod(method) {
       this.selectedPaymentMethod = method.payment_status_name; // Giữ logic hiện tại để hiển thị
-      console.log("Selected Payment Method ID:", method.payment_id); // In ra id của phương thức thanh toán
+      this.selectedPaymentMethodID = method.payment_id;
+      console.log("Selected Payment Method ID:", this.selectedPaymentMethodID); // In ra id của phương thức thanh toán
+    },
+    convertDate(dateStr) {
+      if (!dateStr) return null;
+      const [day, month, year] = dateStr.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`; // Đảm bảo tháng và ngày có 2 chữ số
     },
   },
 };
@@ -530,13 +629,20 @@ export default {
             </div>
           </div>
         </div>
+        <!-- Hiển thị QR nếu selectedPaymentMethodID == 2 -->
+        <div class="mt-3 text-center" v-if="selectedPaymentMethodID == 2">
+          <img
+            v-if="qrImage"
+            :src="qrImage"
+            alt="QR Code"
+            class="qr-image mx-auto"
+          />
+          <p v-else>Loading QR code...</p>
+        </div>
       </div>
 
       <div class="mt-3 text-center">
-        <button
-          class="btn btn-success btn_style"
-          @click="showPaymentPopup = false"
-        >
+        <button class="btn btn-success btn_style" @click="confirmPayment">
           Confirm Payment
         </button>
       </div>
@@ -759,8 +865,10 @@ export default {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 40%;
-  max-width: 90%;
+  width: 50%; /* Độ rộng cố định */
+  max-height: 95vh; /* Giới hạn chiều cao tối đa */
+  overflow-y: auto; /* Hiển thị thanh cuộn dọc nếu nội dung vượt quá */
+  overflow-x: hidden; /* Ẩn cuộn ngang nếu không cần */
 }
 
 .popup-overlay.show {
@@ -880,5 +988,13 @@ export default {
 .btn_style:hover {
   background: #765341;
   color: white;
+}
+
+/* qr */
+.qr-image {
+  max-width: 50%; /* Đảm bảo hình ảnh không vượt quá chiều rộng của popup */
+  height: auto;
+  display: block;
+  margin: 0 auto; /* Căn giữa hình ảnh */
 }
 </style>

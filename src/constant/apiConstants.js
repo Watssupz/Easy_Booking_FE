@@ -32,7 +32,11 @@ export const API_ENDPOINTS = {
 
   GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
 
+  PAYMENT_LIST_TYPE: `${API_BASE_URL}/PS/All`,
   PAYMENT_METHOD: `${API_BASE_URL}/PS/All`,
+  QR_GENERATE: `${API_BASE_URL}/qr/generate`,
+
+  CREATE_BOOKING: `${API_BASE_URL}/booking/create`,
 };
 
 export const VARIABLE = {
