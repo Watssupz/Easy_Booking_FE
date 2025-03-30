@@ -524,7 +524,7 @@ export default {
         <h2 class="col">Booking Detail</h2>
         <button class="custom-close-btn" @click="showPopup = false">✕</button>
       </div>
-
+      <p class="text-danger">*Room booked on the date in red</p>
       <div>
         <Calendar
           :booked-ranges="bookedRanges"
