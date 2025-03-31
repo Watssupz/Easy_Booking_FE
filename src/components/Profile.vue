@@ -2,12 +2,14 @@
 import Header from "./Header.vue";
 import PersonalInfo from "./PersonalInfo.vue";
 import PasswordUpdate from "./PasswordUpdate.vue";
+import MyBooking from "./MyBooking.vue";
 export default {
   name: "SearchPage",
   components: {
     Header,
     PersonalInfo,
     PasswordUpdate,
+    MyBooking,
   },
   data() {
     return {
@@ -30,11 +32,15 @@ export default {
         <div class="profile-menu">
           <div class="menu-item" @click="selectMenu('personal')">
             <img src="@/assets/icons/user.png" alt="User icon" />
-            <span>Thông tin cá nhân</span>
+            <span>Personal Information</span>
           </div>
           <div class="menu-item" @click="selectMenu('password')">
             <img src="@/assets/icons/lock.png" alt="Lock icon" />
-            <span>Cài đặt mật khẩu</span>
+            <span>Password settings</span>
+          </div>
+          <div class="menu-item" @click="selectMenu('mybooking')">
+            <img src="@/assets/icons/list.png" alt="Lock icon" />
+            <span>My Booking</span>
           </div>
         </div>
       </div>
@@ -46,6 +52,9 @@ export default {
           </div>
           <div v-else-if="selectedMenu === 'password'">
             <PasswordUpdate />
+          </div>
+          <div v-else-if="selectedMenu === 'mybooking'">
+            <MyBooking />
           </div>
           <div v-else>
             <p>Vui lòng chọn một mục từ menu bên trái.</p>
