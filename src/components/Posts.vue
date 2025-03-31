@@ -36,6 +36,14 @@ export default {
             <img src="@/assets/icons/homestay.png" alt="Lock icon" />
             <span>Property management</span>
           </div>
+          <div class="menu-item" @click="selectMenu('booking')">
+            <img src="@/assets/icons/homestay.png" alt="Lock icon" />
+            <span>Booking management</span>
+          </div>
+          <div class="menu-item" @click="selectMenu('dashboard')">
+            <img src="@/assets/icons/homestay.png" alt="Lock icon" />
+            <span>Dashboard management</span>
+          </div>
         </div>
       </div>
       <div class="col-md-9">
@@ -46,6 +54,12 @@ export default {
           </div>
           <div v-else-if="selectedMenu === 'managePlace'">
             <ManagePlace />
+          </div>
+          <div v-else-if="selectedMenu === 'booking'">
+            <!-- <ManagePlace /> -->
+          </div>
+          <div v-else-if="selectedMenu === 'dashboard'">
+            <!-- <ManagePlace /> -->
           </div>
           <div v-else>
             <p>Vui lòng chọn một mục từ menu bên trái.</p>
