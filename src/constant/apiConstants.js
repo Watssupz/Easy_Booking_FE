@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
   R_SEARCH: `${API_BASE_URL}/R/Search`,
   R_CREATE: `${API_BASE_URL}/R/Create`,
   GET_ROOM_BY_ID: `${API_BASE_URL}/R/`,
+  UPDATE_ROOM: `${API_BASE_URL}/R/Update/`,
 
   REGION_PROVINCE: `${API_BASE_URL}/Region/provinces`,
   REGION_DISTRICT: `${API_BASE_URL}/Region/districts/`,
@@ -30,12 +31,11 @@ export const API_ENDPOINTS = {
   UPLOAD_THUMBNAIL: `${API_BASE_URL}/M/upload_thumbnail/`,
   GET_MEDIA_ROOM: `${API_BASE_URL}/M/`,
 
-  GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
-
   PAYMENT_LIST_TYPE: `${API_BASE_URL}/PS/All`,
   PAYMENT_METHOD: `${API_BASE_URL}/PS/All`,
   QR_GENERATE: `${API_BASE_URL}/qr/generate`,
 
+  GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
   CREATE_BOOKING: `${API_BASE_URL}/booking/create`,
 };
 
