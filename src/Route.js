@@ -7,8 +7,9 @@ import Profile from "./components/Profile.vue";
 import CreateHost from "./components/CreateHost.vue";
 import Posts from "./components/Posts.vue";
 import Detail from "./components/Detail.vue";
-import About from "./components/About.vue"; 
-import Contact from "./components/Contact.vue"; 
+import About from "./components/About.vue";
+import Contact from "./components/Contact.vue";
+import UpdateRoom from "./components/UpdateRoom.vue";
 const routes = [
   {
     path: "/",
@@ -58,12 +59,17 @@ const routes = [
     path: "/detail/:id",
   },
   {
-    name: "About", 
+    name: "UpdateRoom",
+    component: UpdateRoom,
+    path: "/update/:id",
+  },
+  {
+    name: "About",
     component: About,
     path: "/about",
   },
   {
-    name: "Contact", 
+    name: "Contact",
     component: Contact,
     path: "/contact",
   },
