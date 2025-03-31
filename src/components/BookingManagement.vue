@@ -2,19 +2,9 @@
 import { API_ENDPOINTS } from "@/constant/apiConstants";
 
 export default {
-  name: "MyBooking",
+  name: "BookingManagement",
   data() {
     return {
-      form: {
-        room_id: null,
-        room_number: "",
-        price_per_night: "",
-        description: "",
-        location: "",
-        num_beds: "",
-        num_bathrooms: "",
-        thumbnail: "",
-      },
       list_booking: [],
     };
   },
@@ -22,36 +12,38 @@ export default {
     this.fetchMyBookings(); // Gọi API khi component được tải
   },
   methods: {
-    async fetchMyBookings() {
-      const token = localStorage.getItem("token"); // Lấy token từ localStorage
-
+    async confirmBooking(bookingId) {
+      const token = localStorage.getItem("token");
       if (!token) {
-        this.$message.error("Không tìm thấy token, vui lòng đăng nhập.");
         return;
       }
 
+      if (!confirm("Bạn có chắc chắn muốn xác nhận booking này?")) {
+        return; // Hủy thao tác nếu người dùng không xác nhận
+      }
       try {
-        const response = await fetch(`${API_ENDPOINTS.MY_BOOKING}`, {
-          method: "GET",
-          headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${API_ENDPOINTS.CONFIRM_BOOKING}${bookingId}`,
+          {
+            method: "POST",
+            headers: {
+              accept: "*/*",
+              Authorization: `Bearer ${token}`, // Giữ token nếu API yêu cầu
+            },
+          }
+        );
 
         if (!response.ok) {
-          throw new Error("Lỗi khi lấy danh sách đặt phòng.");
+          throw new Error("Lỗi khi xác nhận booking.");
         }
 
-        const result = await response.json();
-        console.log("API Response:", result); // Kiểm tra dữ liệu API trả về
-
-        this.list_booking = Array.isArray(result) ? result : result.data;
+        this.$message.success("Đã xác nhận booking thành công!");
+        await this.fetchMyBookings(); // Gọi lại hàm lấy danh sách booking
       } catch (error) {
-        console.error("Fetch bookings error: ", error);
+        console.error("Confirm booking error: ", error);
+        this.$message.error("Không thể xác nhận booking.");
       }
     },
-
     async cancelBooking(bookingId) {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -63,7 +55,7 @@ export default {
       }
       try {
         const response = await fetch(
-          `${API_ENDPOINTS.CANCEL_BOOKING}${bookingId}`, // Sửa endpoint theo cURL
+          `${API_ENDPOINTS.CANCEL_BOOKING}${bookingId}`,
           {
             method: "POST",
             headers: {
@@ -84,6 +76,37 @@ export default {
         this.$message.error("Không thể hủy booking.");
       }
     },
+    async fetchMyBookings() {
+      const token = localStorage.getItem("token"); // Lấy token từ localStorage
+
+      if (!token) {
+        this.$message.error("Không tìm thấy token, vui lòng đăng nhập.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_ENDPOINTS.GET_LIST_BOOKING}`, {
+          method: "GET",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Lỗi khi lấy danh sách đặt phòng.");
+        }
+
+        const result = await response.json();
+        console.log("API Response:", result); // Kiểm tra dữ liệu API trả về
+        this.list_booking = Array.isArray(result) ? result : result.data;
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      } catch (error) {
+        console.error("Fetch bookings error: ", error);
+      }
+    },
+
     formatPrice(price) {
       // Định dạng giá tiền, ví dụ: thêm dấu phân cách hàng nghìn
       return price
@@ -117,8 +140,9 @@ export default {
     <!-- <h5 class="pt-3 pb-3">Bạn có: {{ list_booking.length }} chỗ nghỉ</h5> -->
   </div>
   <div v-else class="d-flex justify-content-center">
-    <p>Không tìm thấy chỗ nghỉ nào.</p>
+    <p>There are no reservations yet</p>
   </div>
+
   <!-- List room -->
   <div
     v-for="result in list_booking"
@@ -142,6 +166,12 @@ export default {
         <div>
           <span class="fw-bold fs-4">
             {{ result.room_title }}
+          </span>
+        </div>
+        <div>
+          <span class="fw-bold fs-6 room_user">
+            <img src="@/assets/icons/user.png" alt="User icon" />
+            {{ result.username }}
           </span>
         </div>
         <!-- Giá và nút chi tiết -->
@@ -205,9 +235,10 @@ export default {
             {{ result.check_out != null ? result.check_out : "Not yet" }}
           </p>
         </div>
-        <!-- Nút Hủy Booking -->
-        <div class="mt-2" v-if="result.booking_status != 'Cancelled'">
+        <div class="mt-2 d-flex gap-2">
+          <!-- Nút Hủy Booking -->
           <button
+            v-if="result.booking_status === 'Pending'"
             class="btn btn-danger btn-sm"
             @click="cancelBooking(result.booking_id)"
           >
@@ -220,14 +251,10 @@ export default {
 </template>
 
 <style>
-.price {
-  color: #ff5733;
-  font-weight: bold;
-}
-.booking-status {
-  background-color: #f0f0f0; /* Màu nền tùy chỉnh */
-  padding: 2px 6px; /* Khoảng cách bên trong để trông đẹp hơn */
-  border-radius: 4px; /* Bo góc nếu muốn */
-  display: inline-block; /* Chỉ chiếm chiều rộng của nội dung */
+.room_user img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(100%) opacity(0.6);
 }
 </style>

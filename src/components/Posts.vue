@@ -2,12 +2,14 @@
 import Header from "./Header.vue";
 import NewPlace from "./NewPlace.vue";
 import ManagePlace from "./ManagePlace.vue";
+import BookingManagement from "./BookingManagement.vue";
 export default {
   name: "Posts",
   components: {
     Header,
     NewPlace,
     ManagePlace,
+    BookingManagement,
   },
   data() {
     return {
@@ -37,11 +39,11 @@ export default {
             <span>Property management</span>
           </div>
           <div class="menu-item" @click="selectMenu('booking')">
-            <img src="@/assets/icons/homestay.png" alt="Lock icon" />
+            <img src="@/assets/icons/to-do-list.png" alt="Lock icon" />
             <span>Booking management</span>
           </div>
           <div class="menu-item" @click="selectMenu('dashboard')">
-            <img src="@/assets/icons/homestay.png" alt="Lock icon" />
+            <img src="@/assets/icons/layout.png" alt="Lock icon" />
             <span>Dashboard management</span>
           </div>
         </div>
@@ -56,7 +58,7 @@ export default {
             <ManagePlace />
           </div>
           <div v-else-if="selectedMenu === 'booking'">
-            <!-- <ManagePlace /> -->
+            <BookingManagement />
           </div>
           <div v-else-if="selectedMenu === 'dashboard'">
             <!-- <ManagePlace /> -->

@@ -1,4 +1,6 @@
 <script>
+import { API_ENDPOINTS } from "@/constant/apiConstants";
+
 export default {
   name: "ManagePlace",
   data() {
@@ -27,7 +29,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch("https://localhost:7210/api/R/GetRooms", {
+        const response = await fetch(`${API_ENDPOINTS.GET_ROOM_OWNER}`, {
           method: "GET",
           headers: {
             accept: "*/*",

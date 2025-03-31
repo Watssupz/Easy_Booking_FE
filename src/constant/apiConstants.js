@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   R_CREATE: `${API_BASE_URL}/R/Create`,
   GET_ROOM_BY_ID: `${API_BASE_URL}/R/`,
   UPDATE_ROOM: `${API_BASE_URL}/R/Update/`,
+  GET_ROOM_OWNER: `${API_BASE_URL}/R/GetRooms`,
 
   REGION_PROVINCE: `${API_BASE_URL}/Region/provinces`,
   REGION_DISTRICT: `${API_BASE_URL}/Region/districts/`,
@@ -37,6 +38,10 @@ export const API_ENDPOINTS = {
 
   GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
   CREATE_BOOKING: `${API_BASE_URL}/booking/create`,
+  GET_LIST_BOOKING: `${API_BASE_URL}/booking/get-bookings`,
+  CANCEL_BOOKING: `${API_BASE_URL}/booking/cancel-booking/`,
+  CONFIRM_BOOKING: `${API_BASE_URL}/booking/confirm-booking/`,
+  MY_BOOKING: `${API_BASE_URL}/booking/my-bookings`,
 };
 
 export const VARIABLE = {
