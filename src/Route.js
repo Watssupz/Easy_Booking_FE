@@ -10,6 +10,8 @@ import Detail from "./components/Detail.vue";
 import About from "./components/About.vue";
 import Contact from "./components/Contact.vue";
 import UpdateRoom from "./components/UpdateRoom.vue";
+import Dashboard from "./components/Dashboard.vue";
+
 const routes = [
   {
     path: "/",
@@ -72,6 +74,11 @@ const routes = [
     name: "Contact",
     component: Contact,
     path: "/contact",
+  },
+  {
+    name: "Dashboard",
+    component: Dashboard,
+    path: "/dashboard",
   },
 ];
 

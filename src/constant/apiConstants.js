@@ -44,6 +44,7 @@ export const API_ENDPOINTS = {
   MY_BOOKING: `${API_BASE_URL}/booking/my-bookings`,
   CHECK_IN: `${API_BASE_URL}/booking/check-in/`,
   CHECK_OUT: `${API_BASE_URL}/booking/check-out/`,
+  GET_BOOKING_STATUSCOUNT: `${API_BASE_URL}/booking/get-bookingstatus`,
 };
 
 export const VARIABLE = {

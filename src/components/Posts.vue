@@ -3,6 +3,7 @@ import Header from "./Header.vue";
 import NewPlace from "./NewPlace.vue";
 import ManagePlace from "./ManagePlace.vue";
 import BookingManagement from "./BookingManagement.vue";
+import Dashboard from "./Dashboard.vue";
 export default {
   name: "Posts",
   components: {
@@ -10,6 +11,7 @@ export default {
     NewPlace,
     ManagePlace,
     BookingManagement,
+    Dashboard,
   },
   data() {
     return {
@@ -61,7 +63,7 @@ export default {
             <BookingManagement />
           </div>
           <div v-else-if="selectedMenu === 'dashboard'">
-            <!-- <ManagePlace /> -->
+            <Dashboard />
           </div>
           <div v-else>
             <p>Vui lòng chọn một mục từ menu bên trái.</p>
