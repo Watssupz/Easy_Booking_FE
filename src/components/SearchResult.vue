@@ -106,60 +106,51 @@ export default {
 
           <!-- list room -->
           <div
-            v-for="result in searchResults"
-            :key="result.room_id"
-            class="row searchList p-2 mb-2 shadow"
-          >
-            <div class="col-md-4 d-flex align-items-center">
-              <img
-                class="img-fluid rounded float-start"
-                :src="result.thumbnail || 'https://i.ibb.co/6w0fNhd/FF7D77.png'"
-                alt="Thumbnail"
-              />
-            </div>
-            <div class="col-md-8 pt-1">
-              <div class="row align-items-center">
-                <div class="col-md-8">
-                  <h5 class="m-0">{{ result.room_number }}</h5>
-                </div>
-                <div class="col-md-4">
-                  <div class="row align-items-center">
-                    <div class="col-md-9">
-                      <p class="p-0 m-0 text-sm-end">Rate</p>
-                      <p class="p-0 m-0 text-sm-end">22 review</p>
-                    </div>
-                    <div
-                      class="col-md-3 d-flex bg-white justify-content-center rounded"
-                    >
-                      <p class="p-0 m-0">5.0</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p class="d-flex align-items-center">
-                <img
-                  style="height: 1em; vertical-align: middle"
-                  src="@/assets/icons/location.png"
-                  alt=""
-                />
-                {{ result.location }}
-              </p>
-              <div class="row justify-content-end align-items-center">
-                <div class="col-md-12">
-                  <p class="text-end">
-                    VND {{ formatPrice(result.price_per_night) }}
-                  </p>
-                  <button
-                    class="float-end detail_btn"
-                    @click="goToDetail(result.room_id)"
-                  >
-                    Detail
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+      v-for="result in searchResults"
+      :key="result.room_id"
+      class="searchList mb-2 shadow-sm"
+    >
+      <div class="row g-0">
+        <!-- Phần hình ảnh -->
+        <div class="col-md-4">
+          <img
+            class="img-fluid rounded-start"
+            :src="result.thumbnail || 'https://i.ibb.co/6w0fNhd/FF7D77.png'"
+            alt="Room thumbnail"
+            style="object-fit: cover; height: 100%; width:70%; max-height: 120px;"
+          />
         </div>
+        
+        <!-- Phần thông tin -->
+        <div class="col-md-8 p-2">
+          <h5 class="mb-1 room-title">{{ result.room_number }}</h5>
+
+          <!-- Giá và nút chi tiết được đẩy lên -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <p class="price mb-0">
+              VND {{ formatPrice(result.price_per_night) }} / đêm
+            </p>
+            <button
+              class="detail_btn"
+              @click="goToDetail(result.room_id)"
+            >
+              Xem chi tiết
+            </button>
+          </div>
+
+          <!-- Vị trí -->
+          <p class="location mb-0">
+            <img
+              style="height: 1em; vertical-align: middle; margin-right: 5px;"
+              src="@/assets/icons/location.png"
+              alt="Location icon"
+            />
+            {{ result.location }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
         <div v-else-if="searchQuery" class="no-results">
           Không tìm thấy kết quả cho "{{ searchQuery }}".
         </div>
@@ -177,30 +168,53 @@ export default {
 .searchAdvance input {
   border: 1px solid #765341;
   border-radius: 5px;
+  padding: 8px;
 }
 
 .searchList {
   border-radius: 8px;
-  border: 1px solid gray;
-  background-color: rgba(160, 134, 121, 0.3);
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  /* Thu nhỏ chiều cao tổng thể của card */
+  max-height: 140px;
+}
+
+.searchList:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.room-title {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem; /* Thu nhỏ font tiêu đề */
+}
+
+.location {
+  color: #666;
+  font-size: 0.85rem; /* Thu nhỏ font vị trí */
+}
+
+.price {
+  color: #d32f2f;
+  font-weight: 600;
+  font-size: 0.95rem; /* Thu nhỏ font giá */
 }
 
 .detail_btn {
-  padding: 8px;
-  border: 1px solid #ccc;
+  padding: 6px 12px; /* Thu nhỏ nút */
   border-radius: 5px;
-  font-size: 16px;
-
-  background-color: #f8f8f8;
-  color: #765341;
+  font-size: 0.85rem; /* Thu nhỏ font nút */
+  background-color: #765341;
+  color: white;
   border: none;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .detail_btn:hover {
-  background-color: #6a4a3a;
-  color: white;
+  background-color: #5a3e2e;
 }
 
 .no-results {
