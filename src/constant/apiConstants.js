@@ -42,6 +42,8 @@ export const API_ENDPOINTS = {
   CANCEL_BOOKING: `${API_BASE_URL}/booking/cancel-booking/`,
   CONFIRM_BOOKING: `${API_BASE_URL}/booking/confirm-booking/`,
   MY_BOOKING: `${API_BASE_URL}/booking/my-bookings`,
+  CHECK_IN: `${API_BASE_URL}/booking/check-in/`,
+  CHECK_OUT: `${API_BASE_URL}/booking/check-out/`,
 };
 
 export const VARIABLE = {

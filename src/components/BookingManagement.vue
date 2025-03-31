@@ -40,7 +40,6 @@ export default {
         this.$message.success("Đã xác nhận booking thành công!");
         await this.fetchMyBookings(); // Gọi lại hàm lấy danh sách booking
       } catch (error) {
-        console.error("Confirm booking error: ", error);
         this.$message.error("Không thể xác nhận booking.");
       }
     },
@@ -72,8 +71,55 @@ export default {
         this.$message.success("Đã hủy booking thành công!");
         await this.fetchMyBookings(); // Gọi lại hàm lấy danh sách booking
       } catch (error) {
-        console.error("Cancel booking error: ", error);
         this.$message.error("Không thể hủy booking.");
+      }
+    },
+    async checkIn(bookingId) {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return;
+      }
+      try {
+        const response = await fetch(`${API_ENDPOINTS.CHECK_IN}${bookingId}`, {
+          method: "GET",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`, // Giữ token nếu API yêu cầu
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Lỗi khi hủy booking.");
+        }
+
+        this.$message.success("Đã check in thành công!");
+        await this.fetchMyBookings(); // Gọi lại hàm lấy danh sách booking
+      } catch (error) {
+        this.$message.error("Không thể check in.");
+      }
+    },
+    async checkOut(bookingId) {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return;
+      }
+      try {
+        const response = await fetch(`${API_ENDPOINTS.CHECK_OUT}${bookingId}`, {
+          method: "GET",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`, // Giữ token nếu API yêu cầu
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Lỗi khi hủy booking.");
+        }
+
+        this.$message.success("Đã check out thành công!");
+        await this.fetchMyBookings(); // Gọi lại hàm lấy danh sách booking
+      } catch (error) {
+        this.$message.error("Không thể check out.");
       }
     },
     async fetchMyBookings() {
@@ -131,6 +177,19 @@ export default {
         year: "numeric",
       }).format(date);
     },
+    formatDateTime(dateString) {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false, // 24-hour format
+      }).format(date);
+    },
   },
 };
 </script>
@@ -178,7 +237,16 @@ export default {
         <div class="d-flex justify-content-between align-items-center mb-2">
           <p class="price mb-0">VND {{ formatPrice(result.price) }}</p>
           <!-- Trạng thái đặt phòng với background ôm sát text -->
-          <span class="booking-status">{{ result.booking_status }}</span>
+          <!-- <span class="booking-status">{{ result.booking_status }}</span> -->
+          <span
+            class="booking-status"
+            :class="{
+              'status-pending': result.booking_status === 'Pending',
+              'status-cancelled': result.booking_status === 'Cancelled',
+              'status-confirmed': result.booking_status === 'Confirmed',
+            }"
+            >{{ result.booking_status }}</span
+          >
           <!-- <button class="detail_btn" @click="goToDetail(result.room_id)">
             Cập nhật
           </button> -->
@@ -223,7 +291,11 @@ export default {
               alt="Location icon"
             />
             Check in:
-            {{ result.check_in != null ? result.check_in : "Not yet" }}
+            {{
+              result.check_in != null
+                ? formatDateTime(result.check_in)
+                : "Not yet"
+            }}
           </p>
           <p class="location mb-0">
             <img
@@ -232,7 +304,11 @@ export default {
               alt="Location icon"
             />
             Check out:
-            {{ result.check_out != null ? result.check_out : "Not yet" }}
+            {{
+              result.check_out != null
+                ? formatDateTime(result.check_out)
+                : "Not yet"
+            }}
           </p>
         </div>
         <div class="mt-2 d-flex gap-2">
@@ -243,6 +319,34 @@ export default {
             @click="cancelBooking(result.booking_id)"
           >
             Cancel Booking
+          </button>
+          <!-- Nút Confirm Booking -->
+          <button
+            v-if="result.booking_status === 'Pending'"
+            class="btn btn-success btn-sm"
+            @click="confirmBooking(result.booking_id)"
+          >
+            Confirm Booking
+          </button>
+          <!-- Nút Check In -->
+          <button
+            v-if="result.booking_status === 'Confirmed' && !result.check_in"
+            class="btn btn-primary btn-sm"
+            @click="checkIn(result.booking_id)"
+          >
+            Check In
+          </button>
+          <!-- Nút Check Out -->
+          <button
+            v-if="
+              result.booking_status === 'Confirmed' &&
+              result.check_in &&
+              !result.check_out
+            "
+            class="btn btn-warning btn-sm"
+            @click="checkOut(result.booking_id)"
+          >
+            Check Out
           </button>
         </div>
       </div>
@@ -256,5 +360,28 @@ export default {
   height: 20px;
   object-fit: contain;
   filter: grayscale(100%) opacity(0.6);
+}
+.booking-status {
+  padding: 2px 8px; /* Thêm padding để trạng thái trông gọn gàng hơn */
+  border-radius: 4px; /* Bo góc nhẹ */
+  font-weight: bold; /* Tùy chọn: làm chữ đậm hơn */
+}
+
+/* Màu xám cho Pending */
+.status-pending {
+  background-color: #e0e0e0; /* Màu nền xám nhạt */
+  color: #616161; /* Màu chữ xám đậm */
+}
+
+/* Màu đỏ cho Cancelled */
+.status-cancelled {
+  background-color: #ffebee; /* Màu nền đỏ nhạt */
+  color: #d32f2f; /* Màu chữ đỏ đậm */
+}
+
+/* Màu xanh cho Confirmed */
+.status-confirmed {
+  background-color: #e8f5e9; /* Màu nền xanh nhạt */
+  color: #2e7d32; /* Màu chữ xanh đậm */
 }
 </style>
