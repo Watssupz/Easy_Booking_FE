@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
 
   GET_BOOKING_SCHEDULE: `${API_BASE_URL}/Booking/get-schedule/`,
   CREATE_BOOKING: `${API_BASE_URL}/booking/create`,
+  GET_BOOKING_STATUSCOUNT: `${API_BASE_URL}/booking/get-bookingstatus`,
 };
 
 export const VARIABLE = {
