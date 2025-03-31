@@ -106,51 +106,64 @@ export default {
 
           <!-- list room -->
           <div
-      v-for="result in searchResults"
-      :key="result.room_id"
-      class="searchList mb-2 shadow-sm"
-    >
-      <div class="row g-0">
-        <!-- Phần hình ảnh -->
-        <div class="col-md-4">
-          <img
-            class="img-fluid rounded-start"
-            :src="result.thumbnail || 'https://i.ibb.co/6w0fNhd/FF7D77.png'"
-            alt="Room thumbnail"
-            style="object-fit: cover; height: 100%; width:70%; max-height: 120px;"
-          />
-        </div>
-        
-        <!-- Phần thông tin -->
-        <div class="col-md-8 p-2">
-          <h5 class="mb-1 room-title">{{ result.room_number }}</h5>
+            v-for="result in searchResults"
+            :key="result.room_id"
+            class="searchList mb-2 shadow-sm"
+          >
+            <div class="row g-0">
+              <!-- Phần hình ảnh -->
+              <div class="col-md-4">
+                <img
+                  class="img-fluid rounded-start"
+                  :src="
+                    result.thumbnail || 'https://i.ibb.co/6w0fNhd/FF7D77.png'
+                  "
+                  alt="Room thumbnail"
+                  style="
+                    object-fit: cover;
+                    height: 100%;
+                    width: 70%;
+                    max-height: 120px;
+                  "
+                />
+              </div>
 
-          <!-- Giá và nút chi tiết được đẩy lên -->
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <p class="price mb-0">
-              VND {{ formatPrice(result.price_per_night) }} / đêm
-            </p>
-            <button
-              class="detail_btn"
-              @click="goToDetail(result.room_id)"
-            >
-              Xem chi tiết
-            </button>
+              <!-- Phần thông tin -->
+              <div class="col-md-8 p-2">
+                <h5 class="mb-1 room-title">{{ result.room_number }}</h5>
+
+                <!-- Giá và nút chi tiết được đẩy lên -->
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <p class="price mb-0">
+                    VND {{ formatPrice(result.price_per_night) }} / đêm
+                  </p>
+                  <button
+                    class="detail_btn"
+                    @click="goToDetail(result.room_id)"
+                  >
+                    Xem chi tiết
+                  </button>
+                </div>
+
+                <!-- Vị trí -->
+                <p class="location mb-0">
+                  <img
+                    style="
+                      height: 1em;
+                      vertical-align: middle;
+                      margin-right: 5px;
+                    "
+                    src="@/assets/icons/location.png"
+                    alt="Location icon"
+                  />
+                  {{ result.location }}
+                </p>
+              </div>
+            </div>
           </div>
-
-          <!-- Vị trí -->
-          <p class="location mb-0">
-            <img
-              style="height: 1em; vertical-align: middle; margin-right: 5px;"
-              src="@/assets/icons/location.png"
-              alt="Location icon"
-            />
-            {{ result.location }}
-          </p>
         </div>
-      </div>
-    </div>
-  </div>
         <div v-else-if="searchQuery" class="no-results">
           Không tìm thấy kết quả cho "{{ searchQuery }}".
         </div>
