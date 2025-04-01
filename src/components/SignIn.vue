@@ -3,68 +3,45 @@ import { API_ENDPOINTS } from "@/constant/apiConstants";
 import { useRouter } from "vue-router";
 
 export default {
-  setup() {
-    const router = useRouter();
-    const data = {
+  name: "Sign In",
+  data() {
+    return {
       form: {
         email: "",
         password: "",
       },
     };
+  },
+  setup() {
+    const router = useRouter();
+    return { router };
+  },
+  methods: {
+    async SignIn() {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.AC_SIGN_IN}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.form),
+        });
 
-    const methods = {
-      async SignIn() {
-        // Nên đổi tên thành SignIn
-        try {
-          const response = await fetch(API_ENDPOINTS.AC_SIGN_IN, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data.form),
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("API Error:", response.status, errorText);
-
-            try {
-              const errorJson = JSON.parse(errorText);
-              alert(
-                errorJson.message ||
-                  "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
-              );
-            } catch (parseError) {
-              alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-            }
-            throw new Error(
-              `HTTP error! status: ${response.status}, message: ${errorText}`
-            );
-          }
-
-          const result = await response.json();
-          // console.log("Đăng nhập thành công:", result);
-
-          if (result.data) {
-            localStorage.setItem("token", result.data);
-
-            // Chuyển hướng đến trang home
-            router.push("/home");
-          } else {
-            console.error("Invalid response: missing 'data' field", result);
-            alert("Lỗi đăng nhập. Dữ liệu trả về không hợp lệ.");
-          }
-        } catch (error) {
-          console.error("Lỗi khi đăng nhập:", error);
-          alert("Lỗi đăng nhập. Vui lòng thử lại sau.");
+        if (!response.ok) {
+          this.$message.error("Đăng nhập thất bại.");
+          throw new Error("Đăng nhập thất bại.");
         }
-      },
-    };
 
-    return {
-      form: data.form,
-      SignIn: methods.SignIn,
-    };
+        const result = await response.json();
+        if (result.data) {
+          localStorage.setItem("token", result.data);
+          this.router.push("/home");
+        }
+      } catch (error) {
+        console.log("Sign-in error:", error);
+        // this.$message.error("Lỗi đăng nhập. Hãy thử lại.");
+      }
+    },
   },
 };
 </script>
@@ -95,7 +72,7 @@ export default {
           <a href="#">Forget Password</a>
         </div>
 
-        <button @click="SignIn">Sign in</button>
+        <button type="submit">Sign in</button>
 
         <div class="register">
           <p>Don't have an account? <a href="/sign-up">Sign up now</a></p>
