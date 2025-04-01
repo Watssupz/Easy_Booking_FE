@@ -17,9 +17,16 @@ export default {
   },
   data() {
     return {
+      minPrice: null,
+      maxPrice: null,
+      priceRange: null,
       searchQuery: "",
       searchResults: [],
       isLoading: false,
+
+      currentPage: 1, // Trang hiện tại
+      itemsPerPage: 5, // Số lượng phòng hiển thị trên mỗi trang
+      totalResults: 0, // Tổng số phòng tìm được
     };
   },
   created() {
@@ -38,20 +45,56 @@ export default {
       this.internalSearchQuery = newQuery;
       this.debounceSearch();
     },
+    priceRange(newRange) {
+      this.fetchSearchRoomData(); // Fetch lại khi thay đổi khoảng giá
+    },
+  },
+  computed: {
+    // Lấy danh sách các phòng tương ứng với trang hiện tại
+    paginatedResults() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.searchResults.slice(startIndex, endIndex);
+    },
+    totalPages() {
+      return Math.ceil(this.totalResults / this.itemsPerPage); // Số trang tổng cộng
+    },
   },
   methods: {
     async fetchSearchRoomData() {
       this.isLoading = true;
       try {
+        const requestData = {
+          location: this.searchQuery,
+          minPrice: this.minPrice,
+          maxPrice: this.maxPrice,
+        };
+
+        if (this.priceRange === "1") {
+          requestData.maxPrice = 500000;
+        } else if (this.priceRange === "2") {
+          requestData.minPrice = 500000;
+          requestData.maxPrice = 1000000;
+        } else if (this.priceRange === "3") {
+          requestData.minPrice = 1000000;
+          requestData.maxPrice = 3000000;
+        } else if (this.priceRange === "4") {
+          requestData.minPrice = 3000000;
+          requestData.maxPrice = 5000000;
+        } else if (this.priceRange === "5") {
+          requestData.minPrice = 5000000;
+          requestData.maxPrice = 10000000;
+        } else if (this.priceRange === "6") {
+          requestData.minPrice = 10000000;
+        }
+
         const response = await fetch(`${API_ENDPOINTS.R_SEARCH}`, {
           method: "POST",
           headers: {
             Accept: "*/*",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            location: this.internalSearchQuery,
-          }),
+          body: JSON.stringify(requestData),
         });
 
         if (!response.ok) {
@@ -62,6 +105,7 @@ export default {
 
         const result = await response.json();
         this.searchResults = result.data || [];
+        this.totalResults = result.totalResults || this.searchResults.length; // Cập nhật tổng số kết quả
       } catch (error) {
         console.error("Fetch error: ", error);
         this.searchResults = [];
@@ -76,6 +120,19 @@ export default {
     goToDetail(id) {
       this.$router.push(`/detail/${id}`);
     },
+    // Di chuyển đến trang kế tiếp
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    // Di chuyển về trang trước
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
   },
 };
 </script>
@@ -86,8 +143,8 @@ export default {
     <div class="row">
       <div class="col-md-3">
         <div class="searchAdvance">
-          <p class="m-0 fw-bold fs-4">Tìm</p>
-          <p class="p-0 m-0 fs-6">Tên chỗ nghỉ / điểm đến:</p>
+          <!-- <p class="m-0 fw-bold fs-4">Tìm</p> -->
+          <p class="p-0 m-0 fs-6 fw-bold">Name of property/destination:</p>
           <input
             style="width: 100%"
             type="text"
@@ -96,17 +153,47 @@ export default {
             @input="debounceSearch"
             @keypress.enter="fetchSearchRoomData"
           />
+
+          <p class="p-0 m-0 fs-6 fw-bold">Price range:</p>
+          <div class="d-flex flex-column">
+            <label>
+              <input type="radio" v-model="priceRange" value="0" />
+              All
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="1" />
+              Under 500.000
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="2" />
+              500.000 - 1.000.000
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="3" />
+              1.000.000 - 3.000.000
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="4" />
+              3.000.000 - 5.000.000
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="5" />
+              5.000.000 - 10.000.000
+            </label>
+            <label>
+              <input type="radio" v-model="priceRange" value="6" />
+              Over 10.000.000
+            </label>
+          </div>
         </div>
       </div>
       <div class="col-md-9" v-if="!isLoading">
         <div v-if="searchResults.length">
-          <h5 class="pt-3 pb-3">
-            Tìm thấy: {{ searchResults.length }} chỗ nghỉ
-          </h5>
+          <h5 class="pt-3 pb-3">Found: {{ searchResults.length }} place</h5>
 
           <!-- list room -->
           <div
-            v-for="result in searchResults"
+            v-for="result in paginatedResults"
             :key="result.room_id"
             class="searchList mb-2 shadow-sm"
           >
@@ -143,7 +230,7 @@ export default {
                     class="detail_btn"
                     @click="goToDetail(result.room_id)"
                   >
-                    Xem chi tiết
+                    View details
                   </button>
                 </div>
 
@@ -165,7 +252,26 @@ export default {
           </div>
         </div>
         <div v-else-if="searchQuery" class="no-results">
-          Không tìm thấy kết quả cho "{{ searchQuery }}".
+          Không tìm thấy kết quả.
+        </div>
+        <div
+          class="pagination d-flex justify-content-center align-items-center gap-2"
+        >
+          <button
+            class="detail_btn"
+            @click="prevPage"
+            :disabled="currentPage === 1"
+          >
+            Prev
+          </button>
+          <span>{{ currentPage }} / {{ totalPages }}</span>
+          <button
+            class="detail_btn"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
